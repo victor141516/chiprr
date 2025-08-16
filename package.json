@@ -1,0 +1,19 @@
+{
+  "name": "chiprr",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/string-algorithms": "1.0.3",
+    "vitest": "3.2.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "chokidar": "4.0.3",
+    "mitt": "3.0.1",
+    "string-algorithms": "1.0.31"
+  }
+}
