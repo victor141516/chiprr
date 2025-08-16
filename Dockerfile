@@ -1,7 +1,7 @@
 FROM oven/bun:latest
 
 COPY package.json ./
-COPY bun.lockb ./
+COPY bun.lock ./
 RUN bun install
 
 COPY src ./

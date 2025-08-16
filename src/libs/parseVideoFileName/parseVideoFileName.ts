@@ -49,6 +49,9 @@ function cleanFileName(fileName: string, episodeMatchedText: string) {
     .replace(/\{[^\]]*\}/g, "")
     .replace(/\<[^\]]*\>/g, "");
 
+  // In case something forgets a whitespace before/after a dash
+  showName = showName.replace(/(\w)\s*-\s*(\w)/g, "$1 - $2");
+
   const periods = (fileName.match(/\./g) || []).length;
   if (periods / fileName.length > 0.07) {
     // Some filenames use periods instead of spaces (e.g. `Breaking.Bad.S01E03.720p.BluRay.x264-DEMAND.mkv`)

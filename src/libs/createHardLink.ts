@@ -24,5 +24,6 @@ export async function createHardLink(
     .padStart(2, "0")}.${extension}`;
   const destinationPath = path.join(parentDir, fileName);
 
+  console.log('Linking "', original, '" to "', destinationPath, '"');
   await fs.link(original, destinationPath);
 }

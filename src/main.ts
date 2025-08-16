@@ -1,4 +1,4 @@
-import * as config from "./libs/config";
+import { parameters } from "./libs/args";
 import { createHardLink } from "./libs/createHardLink";
 import { createFileWatcher } from "./libs/fileWatcher";
 import { isVideoFile } from "./libs/filterVideoFiles";
@@ -8,7 +8,7 @@ import {
 } from "./libs/parseVideoFileName/parseVideoFileName";
 import { searchShow } from "./libs/tmdb";
 
-const watcher = await createFileWatcher("./test/input");
+const watcher = await createFileWatcher(parameters["input-directory"]);
 watcher.on("fileCreated", async ({ filePath }) => {
   if (!isVideoFile(filePath)) return;
 
@@ -20,11 +20,14 @@ watcher.on("fileCreated", async ({ filePath }) => {
     return;
   }
 
-  const searchResult = await searchShow(info!.showName, config.TMDB_TOKEN);
+  const searchResult = await searchShow(
+    info!.showName,
+    parameters["tmdb-token"]
+  );
 
   let foundMarch = false;
   for (const show of searchResult) {
-    if (show.name === info!.showName) {
+    if (show.name.toLowerCase() === info!.showName.toLowerCase()) {
       info.showName = show.name;
       foundMarch = true;
     }
@@ -48,5 +51,5 @@ watcher.on("fileCreated", async ({ filePath }) => {
     }
   }
 
-  await createHardLink(filePath, "./test/sorted", info!);
+  await createHardLink(filePath, parameters["sorted-directory"], info!);
 });
