@@ -31,13 +31,14 @@ function cleanFileName(fileName: string, episodeMatchedText: string) {
   let showName = fileName;
 
   const episodeIndicatorPosition = fileName.indexOf(episodeMatchedText);
-  logger.debug("episodeIndicatorPosition :", episodeIndicatorPosition);
+  logger.debug({ episodeIndicatorPosition });
   if (episodeIndicatorPosition > 4) {
     // Trying to guess if the episode indicator is NOT at the beginning of the filename
     showName = fileName
       .slice(0, episodeIndicatorPosition)
       // If we remove the indicator from `Bla [S01E01]` we have `Bla [` so let's remove the bracket
       .replace(/[\(\[\<]$/g, "");
+    logger.debug({ showName, step: 1, function: "cleanFileName" });
   }
 
   // Remove everything in brackets
@@ -46,9 +47,11 @@ function cleanFileName(fileName: string, episodeMatchedText: string) {
     .replace(/\([^\]]*\)/g, "")
     .replace(/\{[^\]]*\}/g, "")
     .replace(/\<[^\]]*\>/g, "");
+  logger.debug({ showName, step: 2, function: "cleanFileName" });
 
   // In case something forgets a whitespace before/after a dash
-  showName = showName.replace(/(\w)\s*-\s*(\w)/g, "$1 - $2");
+  showName = showName.replace(/(\w)\s+-\s+(\w)/g, "$1 - $2");
+  logger.debug({ showName, step: 3, function: "cleanFileName" });
 
   const periods = (fileName.match(/\./g) || []).length;
   if (periods / fileName.length > 0.07) {
@@ -57,6 +60,7 @@ function cleanFileName(fileName: string, episodeMatchedText: string) {
     logger.debug("Removing periods");
     showName = showName.replace(/\./g, " ");
   }
+  logger.debug({ showName, step: 4, function: "cleanFileName" });
 
   const underscores = (fileName.match(/\_/g) || []).length;
   if (underscores / fileName.length > 0.07) {
@@ -64,13 +68,16 @@ function cleanFileName(fileName: string, episodeMatchedText: string) {
     logger.debug("Removing underscores");
     showName = showName.replace(/\_/g, " ");
   }
+  logger.debug({ showName, step: 5, function: "cleanFileName" });
 
   showName = showName.replace(
     /\b(?:HDTV|720p|1080p|480p|WEB-DL|BluRay|DVDRip|x264|x265|HEVC|AAC|AC3)\b/gi,
     ""
   );
+  logger.debug({ showName, step: 6, function: "cleanFileName" });
 
   showName = showName.replace(/\s+/g, " ").trim();
+  logger.debug({ showName, step: 7, function: "cleanFileName" });
 
   if (showName.includes(" - ")) {
     const maybeShowName = showName.split(" - ")[0]!;
@@ -78,8 +85,12 @@ function cleanFileName(fileName: string, episodeMatchedText: string) {
       showName = maybeShowName;
     }
   }
+  logger.debug({ showName, step: 8, function: "cleanFileName" });
 
-  return showName.toLowerCase();
+  showName = showName.toLowerCase();
+  logger.debug({ showName, step: 9, function: "cleanFileName" });
+
+  return showName;
 }
 
 function trimGarbage(fileName: string) {

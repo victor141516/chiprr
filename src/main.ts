@@ -41,7 +41,7 @@ async function handleFileCreated({ filePath }: { filePath: string }) {
   }
 
   if (foundMatch) {
-    logger.debug("Exact match found for:", info!.showName);
+    logger.debug(`Exact match found for: "${info!.showName}"`);
   }
 
   if (!foundMatch) {
@@ -66,6 +66,12 @@ async function handleFileCreated({ filePath }: { filePath: string }) {
           )}"`
         );
       }
+    }
+
+    if (foundMatch) {
+      logger.debug(
+        `Exact match (after removing diacritics) found for: ${info!.showName}`
+      );
     }
   }
 
