@@ -2,6 +2,7 @@ import { parameters } from "./libs/args";
 import { createHardLink } from "./libs/createHardLink";
 import { createFileWatcher } from "./libs/fileWatcher";
 import { isVideoFile } from "./libs/filterVideoFiles";
+import { logger } from "./libs/logger";
 import {
   parseVideoFileName,
   type EpisodeInfo,
@@ -17,7 +18,7 @@ async function handleFileCreated({ filePath }: { filePath: string }) {
   try {
     info = parseVideoFileName(filePath);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return;
   }
 
@@ -35,14 +36,14 @@ async function handleFileCreated({ filePath }: { filePath: string }) {
   }
 
   if (foundMarch) {
-    console.debug("Exact match found for:", info!.showName);
+    logger.debug("Exact match found for:", info!.showName);
   }
 
   if (!foundMarch) {
     if (searchResult.length === 0) {
-      console.warn("Could not found any match for name:", info!.showName);
+      logger.warn("Could not found any match for name:", info!.showName);
     } else {
-      console.warn(
+      logger.warn(
         'Could not find exact match for: "',
         info!.showName,
         '" . Using first search result: "',

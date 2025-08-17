@@ -16,6 +16,11 @@ const options = {
     short: "i",
     default: process.env.INPUT_DIRECTORY,
   },
+  "log-level": {
+    type: "string",
+    short: "l",
+    default: process.env.LOG_LEVEL ?? "info",
+  },
 } as const satisfies ParseArgsOptionsConfig;
 
 export const { values: parameters } = parseArgs({ options }) as {

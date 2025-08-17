@@ -1,6 +1,7 @@
 import * as fs from "fs/promises";
 import path from "path";
 import type { EpisodeInfo } from "./parseVideoFileName/parseVideoFileName";
+import { logger } from "./logger";
 
 export async function createHardLink(
   original: string,
@@ -24,6 +25,6 @@ export async function createHardLink(
     .padStart(2, "0")}.${extension}`;
   const destinationPath = path.join(parentDir, fileName);
 
-  console.log('Linking "', original, '" to "', destinationPath, '"');
+  logger.info(`Linking "${original}" to "${destinationPath}"`);
   await fs.link(original, destinationPath);
 }
