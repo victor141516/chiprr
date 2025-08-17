@@ -6,3 +6,4 @@ RUN bun install
 
 COPY src ./
 
+ENTRYPOINT [ "bun", "run", "main.ts" ]
