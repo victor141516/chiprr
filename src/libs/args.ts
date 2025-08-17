@@ -4,14 +4,17 @@ const options = {
   "sorted-directory": {
     type: "string",
     short: "s",
+    default: process.env.SORTED_DIRECTORY,
   },
   "tmdb-token": {
     type: "string",
     short: "t",
+    default: process.env.TMDB_TOKEN,
   },
   "input-directory": {
     type: "string",
     short: "i",
+    default: process.env.INPUT_DIRECTORY,
   },
 } as const satisfies ParseArgsOptionsConfig;
 
