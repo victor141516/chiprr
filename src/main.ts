@@ -9,7 +9,8 @@ import {
 import { searchShow } from "./libs/tmdb";
 
 const watcher = await createFileWatcher(parameters["input-directory"]);
-watcher.on("fileCreated", async ({ filePath }) => {
+
+async function handleFileCreated({ filePath }: { filePath: string }) {
   if (!isVideoFile(filePath)) return;
 
   let info: EpisodeInfo | null = null;
@@ -27,7 +28,7 @@ watcher.on("fileCreated", async ({ filePath }) => {
 
   let foundMarch = false;
   for (const show of searchResult) {
-    if (show.name.toLowerCase() === info!.showName.toLowerCase()) {
+    if (show.names.includes(info!.showName.toLowerCase())) {
       info.showName = show.name;
       foundMarch = true;
     }
@@ -42,14 +43,17 @@ watcher.on("fileCreated", async ({ filePath }) => {
       console.warn("Could not found any match for name:", info!.showName);
     } else {
       console.warn(
-        "Could not find exact match for:",
+        'Could not find exact match for: "',
         info!.showName,
-        ". Using first search result:",
-        searchResult[0]!.name
+        '" . Using first search result: "',
+        searchResult[0]!.name,
+        '"'
       );
       info.showName = searchResult[0]!.name;
     }
   }
 
   await createHardLink(filePath, parameters["sorted-directory"], info!);
-});
+}
+
+watcher.on("fileCreated", handleFileCreated);
