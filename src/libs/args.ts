@@ -1,34 +1,42 @@
-import { parseArgs, type ParseArgsOptionsConfig } from "node:util";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 const options = {
   "sorted-directory": {
-    type: "string",
-    short: "s",
+    alias: "s",
     default: process.env.SORTED_DIRECTORY,
+    demandOption: true,
+    describe: "The directory where the sorted files will be moved",
+    type: "string",
   },
   "tmdb-token": {
-    type: "string",
-    short: "t",
+    alias: "t",
     default: process.env.TMDB_TOKEN,
+    demandOption: true,
+    describe: "The TMDB token",
+    type: "string",
   },
   "input-directory": {
-    type: "string",
-    short: "i",
+    alias: "i",
     default: process.env.INPUT_DIRECTORY,
+    demandOption: true,
+    describe: "The directory to watch for new files",
+    type: "string",
   },
   "log-level": {
-    type: "string",
-    short: "l",
+    alias: "l",
     default: process.env.LOG_LEVEL ?? "info",
+    describe: "The log level",
+    type: "string",
   },
-} as const satisfies ParseArgsOptionsConfig;
+  "dry-run": {
+    alias: "d",
+    default: (process.env.DRY_RUN ?? "false") === "true",
+    describe: "Dry run",
+    type: "boolean",
+  },
+} as const;
 
-export const { values: parameters } = parseArgs({ options }) as {
-  values: Record<keyof typeof options, string>;
-};
-
-for (const key of Object.keys(options)) {
-  if (!(key in parameters)) {
-    throw new Error(`Missing required parameter: ${key}`);
-  }
-}
+export const parameters = yargs(hideBin(process.argv))
+  .options(options)
+  .parseSync();

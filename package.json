@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "test": "LOG_LEVEL=debug TMDB_TOKEN= SORTED_DIRECTORY= INPUT_DIRECTORY= vitest"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/string-algorithms": "1.0.3",
@@ -12,9 +15,11 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@types/yargs": "^17.0.33",
     "chokidar": "4.0.3",
     "mitt": "3.0.1",
     "string-algorithms": "1.0.31",
-    "winston": "3.17.0"
+    "winston": "3.17.0",
+    "yargs": "^18.0.0"
   }
 }

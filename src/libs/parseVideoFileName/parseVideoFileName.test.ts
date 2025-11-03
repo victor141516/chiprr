@@ -7,35 +7,35 @@ const testCases: Array<{
 }> = [
   {
     filePath: "Machine [HDTV 720p][Cap.101]/Machine [HDTV 720p][Cap.101].mkv",
-    result: { showName: "Machine", season: 1, episode: 1 },
+    result: { showName: "machine", season: 1, episode: 1 },
   },
   {
     filePath: "Breaking Bad S01E01.mkv",
-    result: { showName: "Breaking Bad", season: 1, episode: 1 },
+    result: { showName: "breaking bad", season: 1, episode: 1 },
   },
   {
     filePath: "Game of Thrones 1x05 [1080p].mp4",
-    result: { showName: "Game of Thrones", season: 1, episode: 5 },
+    result: { showName: "game of thrones", season: 1, episode: 5 },
   },
   {
     filePath: "The Office (US) - S02E10 - Christmas Party.avi",
-    result: { showName: "The Office", season: 2, episode: 10 },
+    result: { showName: "the office", season: 2, episode: 10 },
   },
   {
     filePath: "The Eternaut - S01E01 - A Night of Cards HDTV-720p.mkv",
-    result: { showName: "The Eternaut", season: 1, episode: 1 },
+    result: { showName: "the eternaut", season: 1, episode: 1 },
   },
   {
     filePath: "Altered Carbon 720p 7x05 [www.torrentrapid.com].mkv",
-    result: { showName: "Altered Carbon", season: 7, episode: 5 },
+    result: { showName: "altered carbon", season: 7, episode: 5 },
   },
   {
     filePath: "Altered Carbon 720p S07E05 [www.torrentrapid.com].mkv",
-    result: { showName: "Altered Carbon", season: 7, episode: 5 },
+    result: { showName: "altered carbon", season: 7, episode: 5 },
   },
   {
     filePath: "Stargate SG-1 - S02E08 - Family DVD.avi",
-    result: { showName: "Stargate SG-1", season: 2, episode: 8 },
+    result: { showName: "stargate sg-1", season: 2, episode: 8 },
   },
   {
     filePath:
@@ -43,7 +43,7 @@ const testCases: Array<{
     result: {
       episode: 5,
       season: 1,
-      showName: "Altered Carbon",
+      showName: "altered carbon",
     },
   },
   {
@@ -52,13 +52,13 @@ const testCases: Array<{
     result: {
       episode: 3,
       season: 1,
-      showName: "Breaking Bad",
+      showName: "breaking bad",
     },
   },
   {
     filePath:
       "/home/videos/The Office (US)/The.Office.US.S02E03.1080p.WEB-DL.DD5.1.H.264-NTb[rartv].mp4",
-    result: { showName: "The Office", season: 2, episode: 3 },
+    result: { showName: "the office", season: 2, episode: 3 },
   },
   {
     filePath:
@@ -66,7 +66,7 @@ const testCases: Array<{
     result: {
       episode: 5,
       season: 1,
-      showName: "Breaking Bad",
+      showName: "breaking bad",
     },
   },
   {
@@ -75,7 +75,7 @@ const testCases: Array<{
     result: {
       episode: 15,
       season: 2,
-      showName: "The Office",
+      showName: "the office",
     },
   },
   {
@@ -84,7 +84,7 @@ const testCases: Array<{
     result: {
       episode: 6,
       season: 8,
-      showName: "Game of Thrones",
+      showName: "game of thrones",
     },
   },
   {
@@ -93,7 +93,7 @@ const testCases: Array<{
     result: {
       episode: 4,
       season: 2,
-      showName: "Friends",
+      showName: "friends",
     },
   },
   {
@@ -102,7 +102,7 @@ const testCases: Array<{
     result: {
       episode: 8,
       season: 1,
-      showName: "Stranger Things",
+      showName: "stranger things",
     },
   },
   {
@@ -111,7 +111,7 @@ const testCases: Array<{
     result: {
       episode: 8,
       season: 2,
-      showName: "The Mandalorian",
+      showName: "the mandalorian",
     },
   },
   {
@@ -120,7 +120,7 @@ const testCases: Array<{
     result: {
       episode: 3,
       season: 2,
-      showName: "Casa de Papel",
+      showName: "casa de papel",
     },
   },
   {
@@ -129,7 +129,7 @@ const testCases: Array<{
     result: {
       episode: 28,
       season: 4,
-      showName: "Attack on Titan",
+      showName: "attack on titan",
     },
   },
   {
@@ -138,7 +138,7 @@ const testCases: Array<{
     result: {
       episode: 2,
       season: 6,
-      showName: "The Witcher",
+      showName: "the witcher",
     },
   },
   {
@@ -147,7 +147,7 @@ const testCases: Array<{
     result: {
       episode: 3,
       season: 2,
-      showName: "Sherlock",
+      showName: "sherlock",
     },
   },
   {
@@ -156,7 +156,7 @@ const testCases: Array<{
     result: {
       episode: 10,
       season: 3,
-      showName: "Narcos",
+      showName: "narcos",
     },
   },
   {
@@ -165,7 +165,7 @@ const testCases: Array<{
     result: {
       episode: 6,
       season: 4,
-      showName: "Rick and Morty",
+      showName: "rick and morty",
     },
   },
   {
@@ -174,7 +174,7 @@ const testCases: Array<{
     result: {
       episode: 7,
       season: 6,
-      showName: "Peaky Blinders",
+      showName: "peaky blinders",
     },
   },
   {
@@ -183,7 +183,7 @@ const testCases: Array<{
     result: {
       episode: 13,
       season: 6,
-      showName: "Better Call Saul",
+      showName: "better call saul",
     },
   },
   {
@@ -192,7 +192,7 @@ const testCases: Array<{
     result: {
       episode: 10,
       season: 1,
-      showName: "Westworld",
+      showName: "westworld",
     },
   },
   {
@@ -201,7 +201,7 @@ const testCases: Array<{
     result: {
       episode: 8,
       season: 3,
-      showName: "The Boys",
+      showName: "the boys",
     },
   },
   {
@@ -210,7 +210,7 @@ const testCases: Array<{
     result: {
       episode: 14,
       season: 4,
-      showName: "Ozark",
+      showName: "ozark",
     },
   },
   {
@@ -219,7 +219,7 @@ const testCases: Array<{
     result: {
       episode: 1,
       season: 1,
-      showName: "House of Cards",
+      showName: "house of cards",
     },
   },
   {
@@ -228,7 +228,7 @@ const testCases: Array<{
     result: {
       episode: 5,
       season: 1,
-      showName: "Chernobyl",
+      showName: "chernobyl",
     },
   },
   {
@@ -237,10 +237,29 @@ const testCases: Array<{
     result: {
       episode: 8,
       season: 2,
-      showName: "Euphoria",
+      showName: "euphoria",
+    },
+  },
+  {
+    filePath: "/Downloads/One Punch Man S03 - E01 [Sub] 1080p.mkv",
+    result: {
+      episode: 1,
+      season: 3,
+      showName: "one punch man",
     },
   },
 ];
+
+// testCases.splice(0);
+// testCases.push({
+//   filePath:
+//     "Altered Carbon/Season 1/Altered Carbon 720p 1x05 [www.torrentrapid.com].mkv",
+//   result: {
+//     episode: 5,
+//     season: 1,
+//     showName: "altered carbon",
+//   },
+// });
 
 describe("parseVideoFileName", () => {
   for (const { filePath, result } of testCases) {

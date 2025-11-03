@@ -27,18 +27,20 @@ function parsePath(inputPath: string) {
   return parts;
 }
 
-function cleanFileName(fileName: string, episodeMatchedText: string) {
+function cleanFileName(fileName: string, episodeMatchedTexts: string[]) {
   let showName = fileName;
 
-  const episodeIndicatorPosition = fileName.indexOf(episodeMatchedText);
-  logger.debug({ episodeIndicatorPosition });
-  if (episodeIndicatorPosition > 4) {
-    // Trying to guess if the episode indicator is NOT at the beginning of the filename
-    showName = fileName
-      .slice(0, episodeIndicatorPosition)
-      // If we remove the indicator from `Bla [S01E01]` we have `Bla [` so let's remove the bracket
-      .replace(/[\(\[\<]$/g, "");
-    logger.debug({ showName, step: 1, function: "cleanFileName" });
+  for (const episodeMatchedText of episodeMatchedTexts) {
+    const episodeIndicatorPosition = fileName.indexOf(episodeMatchedText);
+    logger.debug({ episodeIndicatorPosition });
+    if (episodeIndicatorPosition > 4) {
+      // Trying to guess if the episode indicator is NOT at the beginning of the filename
+      showName = fileName
+        .slice(0, episodeIndicatorPosition)
+        // If we remove the indicator from `Bla [S01E01]` we have `Bla [` so let's remove the bracket
+        .replace(/[\(\[\<]$/g, "");
+      logger.debug({ showName, step: 1, function: "cleanFileName" });
+    }
   }
 
   // Remove everything in brackets
@@ -111,56 +113,53 @@ function trimGarbage(fileName: string) {
 
 const patterns = [
   // S01E01, S1E1, etc.
-  /[Ss](\d{1,2})[Ee](\d{1,3})/,
+  /[Ss](?<season>\d{1,2})[Ee](?<episode>\d{1,3})/,
   // 1x01, 01x01, etc.
-  /(\d{1,2})x(\d{1,3})/i,
+  /(?<season>\d{1,2})x(?<episode>\d{1,3})/i,
   // Cap.101, Cap101, Capitulo.101, etc.
-  /(?:cap(?:itulo)?\.?\s*)(\d{3})/i,
+  /(?:cap(?:itulo)?\.?\s*)(?<season>\d{1,2})(?<episode>\d{2})/i,
+  /(?:cap(?:itulo)?\.?\s*)(?<episode>\d{1,2})/i,
   // E01, Ep01, etc.
-  /(?:e|ep|episode)\.?\s*(\d{1,3})/i,
+  /(?:e|ep|episode)\.?\s*(?<episode>\d{1,3})/i,
+  // One Punch Man S03 - E01 [Sub] 1080p.mkv
+  /(?:s)(?<season>\d{1,2})/i,
 ];
 
 function findEpisodeAndSeason(fileName: string) {
-  let matchedString!: string;
-  let matchFound = false;
+  const matchedStrings: string[] = [];
   let season!: number;
   let episode!: number;
 
   for (const pattern of patterns) {
     const match = fileName.match(pattern);
+    logger.debug("Regex match:", match);
     if (match) {
-      matchedString = match[0]!;
-
-      matchFound = true;
-
-      if (pattern.source.includes("cap(?:itulo)?")) {
-        const episodeNumber = Number.parseInt(match[1]!);
-        if (episodeNumber > 100) {
-          season = Math.floor(episodeNumber / 100);
-          episode = episodeNumber % 100;
-        } else {
-          season = 1;
-          episode = episodeNumber;
-        }
-      } else if (match.length === 3) {
-        season = Number.parseInt(match[1]!);
-        episode = Number.parseInt(match[2]!);
-      } else if (match.length === 2) {
-        season = 1;
-        episode = Number.parseInt(match[1]!);
+      if (match[0]) {
+        matchedStrings.push(match[0]);
       }
-      break;
+
+      if (match.groups?.season) {
+        season = Number.parseInt(match.groups?.season);
+      }
+
+      if (match.groups?.episode) {
+        episode = Number.parseInt(match.groups?.episode);
+      }
+
+      if (season && episode) {
+        break;
+      }
     }
   }
 
-  if (!matchFound) {
+  if (!season || !episode) {
     throw new Error(
       "Could not find season/episode information in file name: " + fileName
     );
   }
 
   return {
-    matchedString,
+    matchedStrings,
     season,
     episode,
   };
@@ -171,7 +170,7 @@ export function parseVideoFileName(filePath: string): EpisodeInfo {
   const fileName = parsedPath.at(-1)!;
   const firstParentDir = parsedPath.at(-2);
 
-  const { matchedString, season, episode } = findEpisodeAndSeason(fileName);
+  const { matchedStrings, season, episode } = findEpisodeAndSeason(fileName);
 
   // Remove extension
   const initialCleanFilename = fileName
@@ -181,7 +180,10 @@ export function parseVideoFileName(filePath: string): EpisodeInfo {
   logger.debug({ initialCleanFilename });
 
   // Process FILENAME to remove garbage
-  const fullyCleanFilename = cleanFileName(initialCleanFilename, matchedString);
+  const fullyCleanFilename = cleanFileName(
+    initialCleanFilename,
+    matchedStrings
+  );
   logger.debug({ fullyCleanFilename });
   let showName!: string;
 
@@ -196,7 +198,7 @@ export function parseVideoFileName(filePath: string): EpisodeInfo {
     // Traverse directories and try to find a good match
     for (const directory of parsedPath.slice(0, -1)) {
       // Process DIRECTORY to remove garbage
-      const fullyCleanDir = cleanFileName(directory, matchedString);
+      const fullyCleanDir = cleanFileName(directory, matchedStrings);
       logger.debug({ fullyCleanDir });
 
       // If one directory completely matches the show name extracted from the filename, then it's surely the good one
