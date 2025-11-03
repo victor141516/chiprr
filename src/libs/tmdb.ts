@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 type SearchResult = {
   results: Array<{
     id: number;
@@ -40,14 +42,32 @@ export async function searchShow(query: string, apiToken: string) {
     },
   }).then((res) => res.json() as Promise<SearchResult>);
 
-  const result = await Promise.all(
-    searchResult.results.map(async (e) => {
-      const names = [e.name, ...(await languageVariations(e.id, apiToken))].map(
-        (e) => e.toLowerCase()
-      );
-      return { ...e, names };
-    })
-  );
+  logger.debug(`[TMDB] Search API result: ${JSON.stringify(searchResult)}`);
+
+  const exactMatch = searchResult.results.find(({ name }) => {
+    return name.toLocaleLowerCase() === query;
+  });
+
+  let result!: (typeof cache)[string];
+
+  if (exactMatch) {
+    logger.debug(`[TMDB] Exact match found: ${JSON.stringify(exactMatch)}`);
+    result = [{ ...exactMatch, names: [exactMatch.name] }];
+  } else {
+    logger.debug(`[TMDB] Exact match NOT found. Trying language variations`);
+    result = await Promise.all(
+      searchResult.results.map(async (e) => {
+        const names = [
+          e.name,
+          ...(await languageVariations(e.id, apiToken)),
+        ].map((e) => e.toLowerCase());
+        return { ...e, names };
+      })
+    );
+    logger.debug(
+      `[TMDB] Language variations founded: ${JSON.stringify(result)}`
+    );
+  }
 
   cache[query] = result;
 
