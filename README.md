@@ -113,6 +113,7 @@ node main.js \
   --sorted-directory /path/to/organized/shows \
   --tmdb-token your_tmdb_api_token \
   --log-level debug
+  --cache-file-path /app-cache/tmdb.json
 ```
 
 ### Environment Variables
@@ -122,16 +123,18 @@ export INPUT_DIRECTORY=/path/to/downloads
 export SORTED_DIRECTORY=/path/to/organized/shows
 export TMDB_TOKEN=your_tmdb_api_token
 export LOG_LEVEL=info
+export CACHE_FILE_PATH=/path/to/cache.json
 ```
 
 ### Options
 
-| Option               | Short | Environment Variable | Description                                    | Required           |
-| -------------------- | ----- | -------------------- | ---------------------------------------------- | ------------------ |
-| `--input-directory`  | `-i`  | `INPUT_DIRECTORY`    | Directory to watch for new video files         | Yes                |
-| `--sorted-directory` | `-s`  | `SORTED_DIRECTORY`   | Directory where organized files will be linked | Yes                |
-| `--tmdb-token`       | `-t`  | `TMDB_TOKEN`         | TMDB API token for show name matching          | Yes                |
-| `--log-level`        | `-l`  | `LOG_LEVEL`          | Logging level (error, warn, info, debug)       | No (default: info) |
+| Option               | Short | Environment Variable | Description                                    | Required                               |
+| -------------------- | ----- | -------------------- | ---------------------------------------------- | -------------------------------------- |
+| `--input-directory`  | `-i`  | `INPUT_DIRECTORY`    | Directory to watch for new video files         | Yes                                    |
+| `--sorted-directory` | `-s`  | `SORTED_DIRECTORY`   | Directory where organized files will be linked | Yes                                    |
+| `--tmdb-token`       | `-t`  | `TMDB_TOKEN`         | TMDB API token for show name matching          | Yes                                    |
+| `--log-level`        | `-l`  | `LOG_LEVEL`          | Logging level (error, warn, info, debug)       | No (default: info)                     |
+| `--cache-file-path`  | `-c`  | `CACHE_FILE_PATH`    | Path to the cache for TMDB API requests        | No (default: ./.cache/tmdb-cache.json) |
 
 ## Getting a TMDB Token
 
@@ -140,6 +143,8 @@ export LOG_LEVEL=info
 3. Go to Settings → API
 4. Request an API key (choose "Developer" for personal use)
 5. Copy your API Read Access Token (Bearer token)
+
+Note: By default, a cache file will be created and it will be reused even if you restart the app. If you are using Docker, you may want to create a volume for this file.
 
 ## Usage
 

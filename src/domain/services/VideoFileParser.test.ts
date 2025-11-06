@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { parseVideoFileName, type EpisodeInfo } from "./parseVideoFileName";
+import { VideoFileParser } from "./VideoFileParser";
+import { Logger } from "../../infrastructure/logging/Logger";
+import type { EpisodeInfo } from "../models/EpisodeInfo";
 
 const testCases: Array<{
   filePath: string;
@@ -250,22 +252,14 @@ const testCases: Array<{
   },
 ];
 
-// testCases.splice(0);
-// testCases.push({
-//   filePath:
-//     "Altered Carbon/Season 1/Altered Carbon 720p 1x05 [www.torrentrapid.com].mkv",
-//   result: {
-//     episode: 5,
-//     season: 1,
-//     showName: "altered carbon",
-//   },
-// });
+describe("VideoFileParser", () => {
+  const logger = new Logger({ logLevel: "error", name: "VideoFileParser" }); // Use error level to suppress debug logs during tests
+  const parser = new VideoFileParser({ logger });
 
-describe("parseVideoFileName", () => {
   for (const { filePath, result } of testCases) {
     describe(`For the path: ${filePath}`, () => {
       it(`should return: ${JSON.stringify(result)}`, () => {
-        expect(parseVideoFileName(filePath)).toEqual(result);
+        expect(parser.parse(filePath)).toEqual(result);
       });
     });
   }
