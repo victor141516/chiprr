@@ -7,6 +7,7 @@ export interface AppConfig {
   tmdbToken: string;
   logLevel: "error" | "warn" | "info" | "debug";
   cacheFilePath: string;
+  mode: "watch" | "execute";
 }
 
 function parseArguments(): AppConfig {
@@ -42,6 +43,14 @@ function parseArguments(): AppConfig {
       description: "Path to TMDB cache file",
       demandOption: false,
     })
+    .option("mode", {
+      alias: "m",
+      type: "string",
+      description:
+        "Execution mode: watch for continuous monitoring or execute for one-time scan",
+      choices: ["watch", "execute"] as const,
+      default: "watch" as const,
+    })
     .parseSync();
 
   const inputDirectory = argv["input-directory"] || process.env.INPUT_DIRECTORY;
@@ -55,6 +64,7 @@ function parseArguments(): AppConfig {
     argv["cache-file-path"] ||
     process.env.CACHE_FILE_PATH ||
     ".cache/tmdb-cache.json";
+  const mode = argv["mode"] as AppConfig["mode"];
 
   if (!inputDirectory) {
     throw new Error(
@@ -80,6 +90,7 @@ function parseArguments(): AppConfig {
     tmdbToken,
     logLevel,
     cacheFilePath,
+    mode,
   };
 }
 

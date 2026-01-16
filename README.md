@@ -108,12 +108,21 @@ chiprr can be configured using command-line arguments or environment variables:
 ### Command Line Arguments
 
 ```bash
+# Watch mode (continuous monitoring)
 node main.js \
   --input-directory /path/to/downloads \
   --sorted-directory /path/to/organized/shows \
   --tmdb-token your_tmdb_api_token \
-  --log-level debug
-  --cache-file-path /app-cache/tmdb.json
+  --log-level debug \
+  --cache-file-path /app-cache/tmdb.json \
+  --mode watch
+
+# Execute mode (one-time scan)
+node main.js \
+  --input-directory /path/to/downloads \
+  --sorted-directory /path/to/organized/shows \
+  --tmdb-token your_tmdb_api_token \
+  --mode execute
 ```
 
 ### Environment Variables
@@ -128,13 +137,14 @@ export CACHE_FILE_PATH=/path/to/cache.json
 
 ### Options
 
-| Option               | Short | Environment Variable | Description                                    | Required                               |
-| -------------------- | ----- | -------------------- | ---------------------------------------------- | -------------------------------------- |
-| `--input-directory`  | `-i`  | `INPUT_DIRECTORY`    | Directory to watch for new video files         | Yes                                    |
-| `--sorted-directory` | `-s`  | `SORTED_DIRECTORY`   | Directory where organized files will be linked | Yes                                    |
-| `--tmdb-token`       | `-t`  | `TMDB_TOKEN`         | TMDB API token for show name matching          | Yes                                    |
-| `--log-level`        | `-l`  | `LOG_LEVEL`          | Logging level (error, warn, info, debug)       | No (default: info)                     |
-| `--cache-file-path`  | `-c`  | `CACHE_FILE_PATH`    | Path to the cache for TMDB API requests        | No (default: ./.cache/tmdb-cache.json) |
+| Option               | Short | Environment Variable | Description                                                       | Required                               |
+| -------------------- | ----- | -------------------- | ----------------------------------------------------------------- | -------------------------------------- |
+| `--input-directory`  | `-i`  | `INPUT_DIRECTORY`    | Directory to watch for new video files                            | Yes                                    |
+| `--sorted-directory` | `-s`  | `SORTED_DIRECTORY`   | Directory where organized files will be linked                    | Yes                                    |
+| `--tmdb-token`       | `-t`  | `TMDB_TOKEN`         | TMDB API token for show name matching                             | Yes                                    |
+| `--mode`             | `-m`  | -                    | Execution mode: `watch` (continuous) or `execute` (one-time scan) | No (default: watch)                    |
+| `--log-level`        | `-l`  | `LOG_LEVEL`          | Logging level (error, warn, info, debug)                          | No (default: info)                     |
+| `--cache-file-path`  | `-c`  | `CACHE_FILE_PATH`    | Path to the cache for TMDB API requests                           | No (default: ./.cache/tmdb-cache.json) |
 
 ## Getting a TMDB Token
 
@@ -148,18 +158,46 @@ Note: By default, a cache file will be created and it will be reused even if you
 
 ## Usage
 
-Once configured, simply run chiprr:
+chiprr supports two execution modes:
+
+### Watch Mode (Default)
+
+Continuously monitors the input directory for new files:
 
 ```bash
+node main.js --mode watch
+# or simply
 node main.js
 ```
 
-chiprr will:
+In watch mode, chiprr will:
 
 1. Watch the input directory for new video files
 2. Parse the filename to extract show name, season, and episode
 3. Query TMDB to get the official show name
 4. Create a hard link in the sorted directory with a clean, consistent naming format
+5. Continue running and monitoring for new files
+
+### Execute Mode
+
+Performs a one-time scan and organization of all existing files:
+
+```bash
+node main.js --mode execute
+```
+
+In execute mode, chiprr will:
+
+1. Recursively scan the entire input directory for video files
+2. Process each video file found using the same logic as watch mode
+3. Report the number of successful and failed operations
+4. Exit once all files have been processed
+
+This mode is useful for:
+
+- Initial organization of an existing library
+- Periodic cleanup runs (e.g., via cron job)
+- Processing files that were added while chiprr was not running
 
 ### Example
 
