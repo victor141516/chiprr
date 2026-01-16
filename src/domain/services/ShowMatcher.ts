@@ -22,53 +22,50 @@ export class ShowMatcher {
     this.logger = logger;
   }
 
-  async match(episodeInfo: EpisodeInfo): Promise<EpisodeInfo> {
-    const searchResult = await this.tmdbClient.searchShow(episodeInfo.showName);
-
-    let foundMatch = false;
-
-    for (const show of searchResult) {
-      if (show.names.includes(episodeInfo.showName.toLowerCase())) {
-        episodeInfo.showName = show.name;
-        foundMatch = true;
-      }
-    }
+  async match(
+    episodeInfo: EpisodeInfo,
+    parentDirectories?: string[]
+  ): Promise<EpisodeInfo> {
+    const { foundMatch, matchedName } = await this.tryMatch(
+      episodeInfo.showName
+    );
 
     if (foundMatch) {
-      this.logger.debug(`Exact match found for: "${episodeInfo.showName}"`);
+      episodeInfo.showName = matchedName;
       return episodeInfo;
     }
 
-    // Try without diacritics
-    this.logger.debug(
-      `Not found exact match for "${episodeInfo.showName}". Trying without diacritics.`
-    );
-    const parsedNameWithoutDiacritics = removeDiacritics(
-      episodeInfo.showName.toLowerCase()
-    );
-    for (const show of searchResult) {
-      const apiNamesWithoutDiacritics = show.names.map((name) =>
-        removeDiacritics(name)
-      );
-      if (apiNamesWithoutDiacritics.includes(parsedNameWithoutDiacritics)) {
-        episodeInfo.showName = show.name;
-        foundMatch = true;
-        this.logger.debug(
-          `Found a match after removing diacritics: "${parsedNameWithoutDiacritics}" in "${JSON.stringify(
-            apiNamesWithoutDiacritics
-          )}"`
-        );
-      }
-    }
-
-    if (foundMatch) {
+    // If no exact match found with filename, try parent directories iteratively
+    if (parentDirectories && parentDirectories.length > 0) {
       this.logger.debug(
-        `Exact match (after removing diacritics) found for: ${episodeInfo.showName}`
+        `No exact match found for filename "${
+          episodeInfo.showName
+        }". Trying parent directories iteratively. (${JSON.stringify(
+          parentDirectories
+        )})`
       );
-      return episodeInfo;
+
+      // Iterate from closest parent to furthest
+      for (const directory of parentDirectories) {
+        this.logger.debug(`Trying parent directory: "${directory}"`);
+        const { foundMatch, matchedName } = await this.tryMatch(directory);
+
+        if (foundMatch) {
+          this.logger.debug(
+            `Perfect match found with parent directory: "${directory}" -> "${matchedName}"`
+          );
+          episodeInfo.showName = matchedName;
+          return episodeInfo;
+        }
+      }
+
+      this.logger.debug(
+        "No exact match found in parent directories. Falling back to first result."
+      );
     }
 
-    // Fallback to first result
+    // Fallback to first result with original show name
+    const searchResult = await this.tmdbClient.searchShow(episodeInfo.showName);
     if (searchResult.length === 0) {
       this.logger.error(
         `Could not find any match for name: ${episodeInfo.showName}`
@@ -86,5 +83,40 @@ export class ShowMatcher {
     }
 
     return episodeInfo;
+  }
+
+  private async tryMatch(
+    name: string
+  ): Promise<{ foundMatch: boolean; matchedName: string }> {
+    const searchResult = await this.tmdbClient.searchShow(name);
+
+    // Try exact match
+    for (const show of searchResult) {
+      if (show.names.includes(name.toLowerCase())) {
+        this.logger.debug(`Exact match found for: "${name}"`);
+        return { foundMatch: true, matchedName: show.name };
+      }
+    }
+
+    // Try without diacritics
+    this.logger.debug(
+      `Not found exact match for "${name}". Trying without diacritics.`
+    );
+    const parsedNameWithoutDiacritics = removeDiacritics(name.toLowerCase());
+    for (const show of searchResult) {
+      const apiNamesWithoutDiacritics = show.names.map((n) =>
+        removeDiacritics(n)
+      );
+      if (apiNamesWithoutDiacritics.includes(parsedNameWithoutDiacritics)) {
+        this.logger.debug(
+          `Found a match after removing diacritics: "${parsedNameWithoutDiacritics}" in "${JSON.stringify(
+            apiNamesWithoutDiacritics
+          )}"`
+        );
+        return { foundMatch: true, matchedName: show.name };
+      }
+    }
+
+    return { foundMatch: false, matchedName: "" };
   }
 }

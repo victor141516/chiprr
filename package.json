@@ -9,17 +9,17 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/string-algorithms": "1.0.3",
-    "vitest": "3.2.4"
+    "vitest": "4.0.17"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@types/yargs": "^17.0.33",
-    "chokidar": "4.0.3",
+    "@types/yargs": "^17.0.35",
+    "chokidar": "5.0.0",
     "mitt": "3.0.1",
     "string-algorithms": "1.0.31",
-    "winston": "3.17.0",
+    "winston": "3.19.0",
     "yargs": "^18.0.0"
   }
 }

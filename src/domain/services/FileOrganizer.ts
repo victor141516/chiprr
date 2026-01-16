@@ -42,11 +42,15 @@ export class FileOrganizer {
         return;
       }
 
-      // Parse the filename to extract episode info
-      const episodeInfo = this.videoFileParser.parse(filePath);
+      // Parse the filename to extract episode info and parent directories
+      const { parentDirectories, ...episodeInfo } =
+        this.videoFileParser.parse(filePath);
 
-      // Match the show name with TMDB
-      const matchedInfo = await this.showMatcher.match(episodeInfo);
+      // Match the show name with TMDB, using parent directories if needed
+      const matchedInfo = await this.showMatcher.match(
+        episodeInfo,
+        parentDirectories
+      );
 
       // Create hard link in organized structure
       await this.hardLinkCreator.createLink(filePath, matchedInfo);

@@ -250,6 +250,15 @@ const testCases: Array<{
       showName: "one punch man",
     },
   },
+  {
+    filePath:
+      "/Downloads/Peaky Blinders (Proper) - Temporada 1 [HDTV 720p][Cap.105][AC3 5.1 Español Castellano]/PB 1x05 720p [www.newpct1.com].mkv",
+    result: {
+      episode: 5,
+      season: 1,
+      showName: "pb 1x05",
+    },
+  },
 ];
 
 describe("VideoFileParser", () => {
@@ -259,7 +268,14 @@ describe("VideoFileParser", () => {
   for (const { filePath, result } of testCases) {
     describe(`For the path: ${filePath}`, () => {
       it(`should return: ${JSON.stringify(result)}`, () => {
-        expect(parser.parse(filePath)).toEqual(result);
+        const parsed = parser.parse(filePath);
+        expect({
+          showName: parsed.showName,
+          season: parsed.season,
+          episode: parsed.episode,
+        }).toEqual(result);
+        expect(parsed).toHaveProperty("parentDirectories");
+        expect(Array.isArray(parsed.parentDirectories)).toBe(true);
       });
     });
   }

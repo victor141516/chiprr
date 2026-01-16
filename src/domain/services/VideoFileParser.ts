@@ -13,7 +13,7 @@ export class VideoFileParser {
     this.logger = logger;
   }
 
-  parse(filePath: string): EpisodeInfo {
+  parse(filePath: string): EpisodeInfo & { parentDirectories: string[] } {
     const parsedPath = this.parsePath(filePath);
     const fileName = parsedPath.at(-1)!;
 
@@ -34,6 +34,20 @@ export class VideoFileParser {
     );
     this.logger.debug(`Fully clean filename: "${fullyCleanFilename}"`);
     let showName: string;
+
+    // Extract and clean parent directories for matching
+    const parentDirectories: string[] = [];
+    if (parsedPath.length > 1) {
+      // Get directories from closest to furthest (reverse order)
+      for (let i = parsedPath.length - 2; i >= 0; i--) {
+        const directory = parsedPath[i]!;
+        const fullyCleanDir = this.cleanFileName(directory, matchedStrings);
+        if (fullyCleanDir.length > 3) {
+          // Only add meaningful directory names
+          parentDirectories.push(fullyCleanDir);
+        }
+      }
+    }
 
     if (parsedPath.length === 1) {
       this.logger.debug(
@@ -105,6 +119,7 @@ export class VideoFileParser {
       showName,
       season,
       episode,
+      parentDirectories,
     };
   }
 
