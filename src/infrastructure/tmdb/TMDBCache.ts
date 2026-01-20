@@ -1,6 +1,6 @@
 import * as fs from "fs/promises";
+import * as fsSync from "fs";
 import * as path from "path";
-import { existsSync } from "fs";
 
 export interface CachedShow {
   names: string[];
@@ -8,6 +8,7 @@ export interface CachedShow {
   name: string;
 }
 
+// TODO: use logger
 export class TMDBCache {
   private cache: Map<string, CachedShow[]> = new Map();
   private cacheFilePath: string;
@@ -23,8 +24,9 @@ export class TMDBCache {
 
   private loadCache(): void {
     try {
-      if (existsSync(this.cacheFilePath)) {
-        const data = require("fs").readFileSync(this.cacheFilePath, "utf-8");
+      if (fsSync.existsSync(this.cacheFilePath)) {
+        console.log("Loading TMDB cache from", this.cacheFilePath);
+        const data = fsSync.readFileSync(this.cacheFilePath, "utf-8");
         const parsed = JSON.parse(data);
         this.cache = new Map(Object.entries(parsed));
       }
@@ -58,7 +60,7 @@ export class TMDBCache {
       await fs.writeFile(
         this.cacheFilePath,
         JSON.stringify(cacheObject, null, 2),
-        "utf-8"
+        "utf-8",
       );
     } catch (error) {
       console.error("Failed to save TMDB cache:", error);

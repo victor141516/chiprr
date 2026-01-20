@@ -1,0 +1,1102 @@
+{
+  "machine": [
+    {
+      "adult": false,
+      "backdrop_path": "/c5xAH2dZZVSvGH2D3LoyeAFIKGN.jpg",
+      "genre_ids": [
+        10759,
+        18
+      ],
+      "id": 211172,
+      "origin_country": [
+        "FR"
+      ],
+      "original_language": "fr",
+      "original_name": "Machine",
+      "overview": "An action show mixing kung-fu and class war.",
+      "popularity": 1.1325,
+      "poster_path": "/y60GpQoakoVXFKJDH6lbLOiVanv.jpg",
+      "first_air_date": "2024-04-04",
+      "name": "Machine",
+      "vote_average": 6.75,
+      "vote_count": 18,
+      "names": [
+        "machine"
+      ]
+    }
+  ],
+  "breaking bad": [
+    {
+      "adult": false,
+      "backdrop_path": "/vFxjuhENDjEKzWXUGKmRFct15bA.jpg",
+      "genre_ids": [
+        18,
+        80
+      ],
+      "id": 1396,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Breaking Bad",
+      "overview": "Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of only two years left to live. He becomes filled with a sense of fearlessness and an unrelenting desire to secure his family's financial future at any cost as he enters the dangerous world of drugs and crime.",
+      "popularity": 108.5545,
+      "poster_path": "/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
+      "first_air_date": "2008-01-20",
+      "name": "Breaking Bad",
+      "vote_average": 8.9,
+      "vote_count": 16920,
+      "names": [
+        "breaking bad"
+      ]
+    }
+  ],
+  "game of thrones": [
+    {
+      "adult": false,
+      "backdrop_path": "/zZqpAXxVSBtxV9qPBcscfXBcL2w.jpg",
+      "genre_ids": [
+        10765,
+        18,
+        10759
+      ],
+      "id": 1399,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Game of Thrones",
+      "overview": "Seven noble families fight for control of the mythical land of Westeros. Friction between the houses leads to full-scale war. All while a very ancient evil awakens in the farthest north. Amidst the war, a neglected military order of misfits, the Night's Watch, is all that stands between the realms of men and icy horrors beyond.",
+      "popularity": 145.89,
+      "poster_path": "/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg",
+      "first_air_date": "2011-04-17",
+      "name": "Game of Thrones",
+      "vote_average": 8.46,
+      "vote_count": 26113,
+      "names": [
+        "game of thrones"
+      ]
+    }
+  ],
+  "the office": [
+    {
+      "adult": false,
+      "backdrop_path": "/bY2J2Jq8rSrKm5xCFtzYzqFh44o.jpg",
+      "genre_ids": [
+        35
+      ],
+      "id": 2316,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "The Office",
+      "overview": "The everyday lives of office employees in the Scranton, Pennsylvania branch of the fictional Dunder Mifflin Paper Company.",
+      "popularity": 84.8182,
+      "poster_path": "/dg9e5fPRRId8PoBE0F6jl5y85Eu.jpg",
+      "first_air_date": "2005-03-24",
+      "name": "The Office",
+      "vote_average": 8.591,
+      "vote_count": 4896,
+      "names": [
+        "the office"
+      ]
+    }
+  ],
+  "the eternaut": [
+    {
+      "adult": false,
+      "backdrop_path": "/yMjGzK7L4gwzpQNNtFKDeG79upo.jpg",
+      "genre_ids": [
+        18,
+        10759,
+        10765
+      ],
+      "id": 226362,
+      "origin_country": [
+        "AR"
+      ],
+      "original_language": "es",
+      "original_name": "El Eternauta",
+      "overview": "After a devastating toxic snowfall kills millions, Juan Salvo and a group of survivors in Buenos Aires must resist an invisible threat from another world.",
+      "popularity": 6.9367,
+      "poster_path": "/ucI5KroZLP0KyJqQnAdOpzhVvBs.jpg",
+      "first_air_date": "2025-04-30",
+      "name": "The Eternaut",
+      "vote_average": 7.523,
+      "vote_count": 448,
+      "names": [
+        "the eternaut"
+      ]
+    }
+  ],
+  "altered carbon": [
+    {
+      "adult": false,
+      "backdrop_path": "/A6I3M4MIA2Pi2gS6vGdg2eVlVXT.jpg",
+      "genre_ids": [
+        10765,
+        18
+      ],
+      "id": 68421,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Altered Carbon",
+      "overview": "After 250 years on ice, a prisoner returns to life in a new body with one chance to win his freedom: by solving a mind-bending murder.",
+      "popularity": 9.5802,
+      "poster_path": "/66rKwpSexUZ3yTv5lBS1bjU4Ykk.jpg",
+      "first_air_date": "2018-02-02",
+      "name": "Altered Carbon",
+      "vote_average": 7.65,
+      "vote_count": 2165,
+      "names": [
+        "altered carbon"
+      ]
+    }
+  ],
+  "stargate sg-1": [
+    {
+      "adult": false,
+      "backdrop_path": "/yOyzlRw54oYaGvhUBdPr7TFwtrX.jpg",
+      "genre_ids": [
+        10765,
+        10759
+      ],
+      "id": 4629,
+      "origin_country": [
+        "CA",
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Stargate SG-1",
+      "overview": "The story of Stargate SG-1 begins about a year after the events of the feature film, when the United States government learns that an ancient alien device called the Stargate can access a network of such devices on a multitude of planets. SG-1 is an elite Air Force special operations team, one of more than two dozen teams from Earth who explore the galaxy and defend against alien threats such as the Goa'uld, Replicators, and the Ori.",
+      "popularity": 65.0602,
+      "poster_path": "/dQjmI7XxI47v8IM2MUysHG0LuU2.jpg",
+      "first_air_date": "1997-07-27",
+      "name": "Stargate SG-1",
+      "vote_average": 8.281,
+      "vote_count": 1733,
+      "names": [
+        "stargate sg-1"
+      ]
+    }
+  ],
+  "the office us": [
+    {
+      "adult": false,
+      "backdrop_path": "/bY2J2Jq8rSrKm5xCFtzYzqFh44o.jpg",
+      "genre_ids": [
+        35
+      ],
+      "id": 2316,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "The Office",
+      "overview": "The everyday lives of office employees in the Scranton, Pennsylvania branch of the fictional Dunder Mifflin Paper Company.",
+      "popularity": 92.9802,
+      "poster_path": "/dg9e5fPRRId8PoBE0F6jl5y85Eu.jpg",
+      "first_air_date": "2005-03-24",
+      "name": "The Office",
+      "vote_average": 8.591,
+      "vote_count": 4897,
+      "names": [
+        "the office",
+        "o escritório",
+        "a hivatal",
+        "the office (us)",
+        "המשרד",
+        "la birou",
+        "the office",
+        "офис",
+        "biuro",
+        "офіс",
+        "kancl",
+        "오피스",
+        "konttori",
+        "‎ofis‎",
+        "офисът",
+        "kontoret",
+        "ofiss",
+        "biuras",
+        "办公室",
+        "the office us",
+        "la oficina",
+        "辦公室瘋雲",
+        "u uredu",
+        "辦公室瘋雲",
+        "اداره",
+        "ジ・オフィス",
+        "ოფისი",
+        "المكتب",
+        "kontor",
+        "chuyện văn phòng",
+        "ออฟฟิศป่วนชวนหัว",
+        "das büro",
+        "das büro",
+        "द ऑफ़िस",
+        "у канцеларији",
+        "pisarna"
+      ]
+    }
+  ],
+  "friends": [
+    {
+      "adult": false,
+      "backdrop_path": "/l0qVZIpXtIo7km9u5Yqh0nKPOr5.jpg",
+      "genre_ids": [
+        35
+      ],
+      "id": 1668,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Friends",
+      "overview": "Six young people from New York City, on their own and struggling to survive in the real world, find the companionship, comfort and support they get from each other to be the perfect antidote to the pressures of life.",
+      "popularity": 90.2641,
+      "poster_path": "/f496cm9enuEsZkSPzCwnTESEK5s.jpg",
+      "first_air_date": "1994-09-22",
+      "name": "Friends",
+      "vote_average": 8.419,
+      "vote_count": 8797,
+      "names": [
+        "friends"
+      ]
+    }
+  ],
+  "stranger things": [
+    {
+      "adult": false,
+      "backdrop_path": "/8zbAoryWbtH0DKdev8abFAjdufy.jpg",
+      "genre_ids": [
+        10765,
+        9648,
+        10759
+      ],
+      "id": 66732,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Stranger Things",
+      "overview": "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.",
+      "popularity": 518.424,
+      "poster_path": "/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg",
+      "first_air_date": "2016-07-15",
+      "name": "Stranger Things",
+      "vote_average": 8.6,
+      "vote_count": 20354,
+      "names": [
+        "stranger things"
+      ]
+    }
+  ],
+  "the mandalorian": [
+    {
+      "adult": false,
+      "backdrop_path": "/9zcbqSxdsRMZWHYtyCd1nXPr2xq.jpg",
+      "genre_ids": [
+        10765,
+        10759,
+        18
+      ],
+      "id": 82856,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "The Mandalorian",
+      "overview": "After the fall of the Galactic Empire, lawlessness has spread throughout the galaxy. A lone gunfighter makes his way through the outer reaches, earning his keep as a bounty hunter.",
+      "popularity": 30.7796,
+      "poster_path": "/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg",
+      "first_air_date": "2019-11-12",
+      "name": "The Mandalorian",
+      "vote_average": 8.4,
+      "vote_count": 10674,
+      "names": [
+        "the mandalorian"
+      ]
+    }
+  ],
+  "la casa de papel": [
+    {
+      "adult": false,
+      "backdrop_path": "/xGexTKCJDkl12dTW4YCBDXWb1AD.jpg",
+      "genre_ids": [
+        80,
+        18
+      ],
+      "id": 71446,
+      "origin_country": [
+        "ES"
+      ],
+      "original_language": "es",
+      "original_name": "La casa de papel",
+      "overview": "To carry out the biggest heist in history, a mysterious man called The Professor recruits a band of eight robbers who have a single characteristic: none of them has anything to lose. Five months of seclusion - memorizing every step, every detail, every probability - culminate in eleven days locked up in the National Coinage and Stamp Factory of Spain, surrounded by police forces and with dozens of hostages in their power, to find out whether their suicide wager will lead to everything or nothing.",
+      "popularity": 26.0809,
+      "poster_path": "/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg",
+      "first_air_date": "2017-05-02",
+      "name": "Money Heist",
+      "vote_average": 8.231,
+      "vote_count": 19226,
+      "names": [
+        "money heist",
+        "money heist",
+        "η τέλεια ληστεία",
+        "haus des geldes",
+        "la casa di carta",
+        "la maison de papier",
+        "בית הנייר",
+        "бумажный дом",
+        "къща от хартия",
+        "papírový dům",
+        "纸房子",
+        "종이의 집",
+        "паперовий будинок",
+        "fabrica de bani",
+        "dom z papieru",
+        "rahapaja",
+        "кућа од папира",
+        "phi vụ triệu đô",
+        "pinigų namai",
+        "紙房子",
+        "بيت الورق",
+        "بيت الورق",
+        "خانه کاغذی",
+        "la casa de papel",
+        "a nagy pénzrablás",
+        "papirhuset",
+        "papirhuset",
+        "money heist",
+        "ทรชนคนปล้นโลก",
+        "ペーパー・ハウス",
+        "dom z papiera",
+        "haus des geldes",
+        "kuća od papira",
+        "ქაღალდის სახლი",
+        "紙房子",
+        "rop denarja",
+        "la casa de papel"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/gk1enrMtCVABqJd4ujVwIIeswTT.jpg",
+      "genre_ids": [
+        99
+      ],
+      "id": 132719,
+      "origin_country": [
+        "ES"
+      ],
+      "original_language": "es",
+      "original_name": "La Casa de Papel: de Tokio a Berlín",
+      "overview": "The filmmakers and actors behind \"Money Heist\" characters like Tokyo and the Professor talk about the emotional and artistic process of filming Money Heist.",
+      "popularity": 7.7284,
+      "poster_path": "/7YuQcbPXgk6CP75TOeCY4VGkJgt.jpg",
+      "first_air_date": "2021-09-03",
+      "name": "Money Heist: From Tokyo to Berlin",
+      "vote_average": 8.168,
+      "vote_count": 235,
+      "names": [
+        "money heist: from tokyo to berlin",
+        "money heist: from tokyo to berlin",
+        "la casa de papel: de tóquio a berlim",
+        "la casa de papel: de tóquio a berlim",
+        "la casa de papel : de tokyo à berlin",
+        "бумажный дом: от токио до берлина",
+        "la casa di carta: da tokyo a berlino",
+        "‏בית הנייר: מטוקיו ועד ברלין",
+        "a nagy pénzrablás: tokiótól berlinig",
+        "kuća od papira: od tokia do berlina",
+        "haus des geldes: von tokio bis berlin",
+        "паперовий будинок: від токіо до берліну",
+        "ペーパー・ハウス: トーキョーからベルリンまで",
+        "종이의 집: 도쿄에서 베를린까지",
+        "la maison de papier : de tokyo à berlin",
+        "papírový dům: z tokia do berlína",
+        "dom z papieru: od tokio do berlina",
+        "la casa de papel: tokyo'dan berlin'e",
+        "η τέλεια ληστεία: από την τόκιο στον βερολίνο",
+        "纸房子：从东京到柏林",
+        "بيت الورق: من طوكيو الى برلين",
+        "بيت الورق: من طوكيو إلى برلين",
+        "ทรชนคนปล้นโลก: จากโตเกียวสู่เบอร์ลิน",
+        "fabrica de bani: de la tokyo la berlin",
+        "la casa de papel: de tokio a berlín",
+        "rahapaja: tokiosta berliiniin",
+        "紙房子：從東京到柏林"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/wJxZLiPbXrU601c6e9A6kYLejso.jpg",
+      "genre_ids": [
+        18,
+        10759,
+        80
+      ],
+      "id": 146176,
+      "origin_country": [
+        "ES"
+      ],
+      "original_language": "es",
+      "original_name": "Berlín",
+      "overview": "During his glory days, Berlin and a gang assembled in Paris for one of his greatest plans ever: stealing 44 million euros' worth of jewels in one night.",
+      "popularity": 8.9714,
+      "poster_path": "/69YuvoiWTtK6oyYH2Jl4Q6SgZ59.jpg",
+      "first_air_date": "2023-12-29",
+      "name": "Berlin",
+      "vote_average": 7.55,
+      "vote_count": 604,
+      "names": [
+        "berlin",
+        "berlin",
+        "베를린",
+        "berlin",
+        "berlino",
+        "berlin",
+        "berlin",
+        "берлін",
+        "berlin",
+        "เบอร์ลิน",
+        "柏林",
+        "berlim",
+        "berlin",
+        "berlin",
+        "berlim",
+        "برلين",
+        "βερολίνο",
+        "berlin",
+        "berlin",
+        "برلين",
+        "柏林",
+        "柏林",
+        "berlin",
+        "berliini",
+        "berlin",
+        "ברלין",
+        "बर्लिन",
+        "berlin",
+        "ベルリン",
+        "berlin",
+        "berlin",
+        "берлин",
+        "berlin",
+        "berlin",
+        "纸房子：柏林",
+        "برلین",
+        "berlín",
+        "берлин",
+        "berlynas",
+        "берлин",
+        "berlin"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/lcTuggU70y6pt6x13Rv1Ffjs93K.jpg",
+      "genre_ids": [
+        10759,
+        80,
+        18,
+        9648
+      ],
+      "id": 112836,
+      "origin_country": [
+        "KR"
+      ],
+      "original_language": "ko",
+      "original_name": "종이의 집: 공동경제구역",
+      "overview": "Disguised under the shadows of a mask, a crew of desperados band together under the leadership of a criminal mastermind known only as “The Professor” to pull off the biggest heist Korea has ever seen.",
+      "popularity": 6.1269,
+      "poster_path": "/bnfTPTTytrZZ9Aw6hoOQdojiaKo.jpg",
+      "first_air_date": "2022-06-24",
+      "name": "Money Heist: Korea - Joint Economic Area",
+      "vote_average": 7.72,
+      "vote_count": 704,
+      "names": [
+        "money heist: korea - joint economic area",
+        "la casa de papel: corea",
+        "money heist: korea - joint economic area",
+        "la casa di carta: corea",
+        "money heist: korea",
+        "la casa de papel: coreia",
+        "haus des geldes: korea",
+        "a nagy pénzrablás: korea",
+        "η τέλεια ληστεία: κορέα",
+        "纸房子：韩国篇",
+        "la casa de papel: korea",
+        "dom z papieru: korea",
+        "la casa de papel: kore",
+        "бумажный дом: корея",
+        "phi vụ triệu đô: hàn quốc",
+        "паперовий будинок: корея",
+        "紙房子：韓國篇",
+        "紙房子：韓國篇",
+        "ทรชนคนปล้นโลก: เกาหลีเดือด",
+        "papírový dům: korea",
+        "بيت الورق : كوريا - المنطقة الاقتصادية مشتركة",
+        "la casa de papel: corea",
+        "בית הנייר: קוריאה",
+        "ペーパー・ハウス・コリア: 統一通貨を奪え",
+        "纸房子：韩国篇",
+        "la casa de papel: korea",
+        "money heist - korea",
+        "la casa de papel: coreia",
+        "بيت الورق : كوريا - المنطقة الاقتصادية مشتركة",
+        "fabrica de bani: coreea",
+        "крађа новца: кореја",
+        "money heist: korea - joint economic area",
+        "ქაღალდის სახლი: კორეა - ერთიანი ეკონომიკური ზონა",
+        "rahapaja: korea",
+        "pinigų namai: korėja - bendra ekonominė zona",
+        "kuća od papira: koreja"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/w1mKm7NWxqYF2NM6PSOHJam458x.jpg",
+      "genre_ids": [
+        18
+      ],
+      "id": 123732,
+      "origin_country": [
+        "TR"
+      ],
+      "original_language": "tr",
+      "original_name": "Kağıt Ev",
+      "overview": "",
+      "popularity": 0.6698,
+      "poster_path": "/tfiVzFITX00UN27n1m2Xe7gxpDm.jpg",
+      "first_air_date": "2021-04-19",
+      "name": "Kağıt Ev",
+      "vote_average": 5.5,
+      "vote_count": 2,
+      "names": [
+        "kağıt ev",
+        "бумажный дом",
+        "la casa de papel"
+      ]
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/nIFynZaeQnD3wVqBldVN6umgR5g.jpg",
+      "genre_ids": [
+        18,
+        80
+      ],
+      "id": 308014,
+      "origin_country": [
+        "ES"
+      ],
+      "original_language": "es",
+      "original_name": "Berlín y la dama del armiño",
+      "overview": "Targeting a priceless work of art, Berlin assembles his gang of thieves in Seville.",
+      "popularity": 2.8915,
+      "poster_path": "/fKjG7mO7wuT9sEMEVmHFtGI6T4V.jpg",
+      "first_air_date": "2026-05-15",
+      "name": "Berlin and the Lady with an Ermine",
+      "vote_average": 0,
+      "vote_count": 0,
+      "names": [
+        "berlin and the lady with an ermine",
+        "berlin and the lady with an ermine",
+        "berlim e a dama com arminho",
+        "berlino e la dama con l'ermellino",
+        "베를린과 흰 족제비를 안은 여인",
+        "берлін і пані з горностаєм",
+        "berlim e a dama com arminho",
+        "بيت الورق برلين  ولوحة ليوناردو دا فينشي"
+      ]
+    }
+  ],
+  "attack on titan": [
+    {
+      "adult": false,
+      "backdrop_path": "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg",
+      "genre_ids": [
+        16,
+        10765,
+        10759
+      ],
+      "id": 1429,
+      "origin_country": [
+        "JP"
+      ],
+      "original_language": "ja",
+      "original_name": "進撃の巨人",
+      "overview": "100 years ago, the last remnants of humanity were forced to retreat behind the towering walls of a fortified city to escape the massive, man-eating Titans that roamed the land outside their fortress. Only the members of the Scouting Legion dared to stray beyond the safety of the walls – but even those brave warriors seldom returned alive. Those within the city clung to the illusion of a peaceful existence until the day that dream was shattered, and their slim chance at survival was reduced to one horrifying choice: kill – or be devoured!",
+      "popularity": 22.4532,
+      "poster_path": "/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg",
+      "first_air_date": "2013-04-07",
+      "name": "Attack on Titan",
+      "vote_average": 8.7,
+      "vote_count": 7172,
+      "names": [
+        "attack on titan"
+      ]
+    }
+  ],
+  "the witcher 2019": [],
+  "the witcher": [
+    {
+      "adult": false,
+      "backdrop_path": "/foGkPxpw9h8zln81j63mix5B7m8.jpg",
+      "genre_ids": [
+        18,
+        10759
+      ],
+      "id": 71912,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "The Witcher",
+      "overview": "Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world where people often prove more wicked than beasts.",
+      "popularity": 69.8935,
+      "poster_path": "/AoGsDM02UVt0npBA8OvpDcZbaMi.jpg",
+      "first_air_date": "2019-12-20",
+      "name": "The Witcher",
+      "vote_average": 7.951,
+      "vote_count": 6500,
+      "names": [
+        "the witcher"
+      ]
+    }
+  ],
+  "sherlock": [
+    {
+      "adult": false,
+      "backdrop_path": "/8rvLEmdI4gLrMO1rLqbNdnNcPFE.jpg",
+      "genre_ids": [
+        80,
+        18,
+        9648
+      ],
+      "id": 19885,
+      "origin_country": [
+        "GB"
+      ],
+      "original_language": "en",
+      "original_name": "Sherlock",
+      "overview": "A modern update finds the famous sleuth and his doctor partner solving crime in 21st century London.",
+      "popularity": 23.3786,
+      "poster_path": "/7WTsnHkbA0FaG6R9twfFde0I9hl.jpg",
+      "first_air_date": "2010-07-25",
+      "name": "Sherlock",
+      "vote_average": 8.512,
+      "vote_count": 6143,
+      "names": [
+        "sherlock"
+      ]
+    }
+  ],
+  "narcos": [
+    {
+      "adult": false,
+      "backdrop_path": "/qx8XQund44cecIJiX2Yb4SUeiT.jpg",
+      "genre_ids": [
+        80,
+        18
+      ],
+      "id": 63351,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Narcos",
+      "overview": "A gritty chronicle of the war against Colombia's infamously violent and powerful drug cartels.",
+      "popularity": 25.0812,
+      "poster_path": "/rTmal9fDbwh5F0waol2hq35U4ah.jpg",
+      "first_air_date": "2015-08-28",
+      "name": "Narcos",
+      "vote_average": 8.06,
+      "vote_count": 3138,
+      "names": [
+        "narcos"
+      ]
+    }
+  ],
+  "rick and morty": [
+    {
+      "adult": false,
+      "backdrop_path": "/9In9QgVJx7PlFOAgVHCKKSbo605.jpg",
+      "genre_ids": [
+        16,
+        35,
+        10765,
+        10759
+      ],
+      "id": 60625,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Rick and Morty",
+      "overview": "Follows a sociopathic genius scientist who drags his inherently timid grandson on adventures across the universe.",
+      "popularity": 61.9992,
+      "poster_path": "/WGRQ8FpjkDTzivQJ43t94bOuY0.jpg",
+      "first_air_date": "2013-12-02",
+      "name": "Rick and Morty",
+      "vote_average": 8.683,
+      "vote_count": 10610,
+      "names": [
+        "rick and morty"
+      ]
+    }
+  ],
+  "peaky blinders": [
+    {
+      "adult": false,
+      "backdrop_path": "/l8v3gJDlASN0lNn51gR8zQJsu5O.jpg",
+      "genre_ids": [
+        18,
+        80
+      ],
+      "id": 60574,
+      "origin_country": [
+        "GB"
+      ],
+      "original_language": "en",
+      "original_name": "Peaky Blinders",
+      "overview": "A gangster family epic set in 1919 Birmingham, England and centered on a gang who sew razor blades in the peaks of their caps, and their fierce boss Tommy Shelby, who means to move up in the world.",
+      "popularity": 81.6474,
+      "poster_path": "/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg",
+      "first_air_date": "2013-09-12",
+      "name": "Peaky Blinders",
+      "vote_average": 8.526,
+      "vote_count": 10744,
+      "names": [
+        "peaky blinders"
+      ]
+    }
+  ],
+  "better call saul": [
+    {
+      "adult": false,
+      "backdrop_path": "/t15KHp3iNfHVQBNIaqUGW12xQA4.jpg",
+      "genre_ids": [
+        80,
+        18
+      ],
+      "id": 60059,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Better Call Saul",
+      "overview": "Six years before Saul Goodman meets Walter White. We meet him when the man who will become Saul Goodman is known as Jimmy McGill, a small-time lawyer searching for his destiny, and, more immediately, hustling to make ends meet. Working alongside, and, often, against Jimmy, is “fixer” Mike Ehrmantraut. The series tracks Jimmy’s transformation into Saul Goodman, the man who puts “criminal” in “criminal lawyer\".",
+      "popularity": 59.3544,
+      "poster_path": "/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg",
+      "first_air_date": "2015-02-08",
+      "name": "Better Call Saul",
+      "vote_average": 8.704,
+      "vote_count": 6121,
+      "names": [
+        "better call saul"
+      ]
+    }
+  ],
+  "westworld": [
+    {
+      "adult": false,
+      "backdrop_path": "/rX5hvSRB2k4YoIvRg6Zky52rWk0.jpg",
+      "genre_ids": [
+        10765,
+        37
+      ],
+      "id": 63247,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Westworld",
+      "overview": "A dark odyssey about the dawn of artificial consciousness and the evolution of sin. Set at the intersection of the near future and the reimagined past, it explores a world in which every human appetite, no matter how noble or depraved, can be indulged.",
+      "popularity": 29.1859,
+      "poster_path": "/8MfgyFHf7XEboZJPZXCIDqqiz6e.jpg",
+      "first_air_date": "2016-10-02",
+      "name": "Westworld",
+      "vote_average": 8.025,
+      "vote_count": 5974,
+      "names": [
+        "westworld"
+      ]
+    }
+  ],
+  "the boys": [
+    {
+      "adult": false,
+      "backdrop_path": "/7cqKGQMnNabzOpi7qaIgZvQ7NGV.jpg",
+      "genre_ids": [
+        10765,
+        10759
+      ],
+      "id": 76479,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "The Boys",
+      "overview": "A group of vigilantes known informally as “The Boys” set out to take down corrupt superheroes with no more than blue-collar grit and a willingness to fight dirty.",
+      "popularity": 54.435,
+      "poster_path": "/2zmTngn1tYC1AvfnrFLhxeD82hz.jpg",
+      "first_air_date": "2019-07-25",
+      "name": "The Boys",
+      "vote_average": 8.444,
+      "vote_count": 11526,
+      "names": [
+        "the boys"
+      ]
+    }
+  ],
+  "ozark": [
+    {
+      "adult": false,
+      "backdrop_path": "/aatG9iVAUL7U7OyFEmupESpOrD2.jpg",
+      "genre_ids": [
+        80,
+        18
+      ],
+      "id": 69740,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Ozark",
+      "overview": "A financial adviser drags his family from Chicago to the Missouri Ozarks, where he must launder $500 million in five years to appease a drug boss.",
+      "popularity": 24.6175,
+      "poster_path": "/pCGyPVrI9Fzw6rE1Pvi4BIXF6ET.jpg",
+      "first_air_date": "2017-07-21",
+      "name": "Ozark",
+      "vote_average": 8.21,
+      "vote_count": 2612,
+      "names": [
+        "ozark"
+      ]
+    }
+  ],
+  "house of cards us": [
+    {
+      "adult": false,
+      "backdrop_path": "/A3bigAAa4u6EbDvmMpDc0GNIEtG.jpg",
+      "genre_ids": [
+        18
+      ],
+      "id": 1425,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "House of Cards",
+      "overview": "Set in present day Washington, D.C., House of Cards is the story of Frank Underwood, a ruthless and cunning politician, and his wife Claire who will stop at nothing to conquer everything. This wicked political drama penetrates the shadowy world of greed, sex and corruption in modern D.C.",
+      "popularity": 26.5703,
+      "poster_path": "/hKWxWjFwnMvkWQawbhvC0Y7ygQ8.jpg",
+      "first_air_date": "2013-02-01",
+      "name": "House of Cards",
+      "vote_average": 8,
+      "vote_count": 3036,
+      "names": [
+        "house of cards",
+        "house of cards",
+        "house of cards",
+        "house of cards",
+        "house of cards - gli intrighi del potere",
+        "kártyavár",
+        "house of cards",
+        "בית הקלפים",
+        "карточный домик",
+        "纸牌屋",
+        "house of cards ",
+        "dům z karet",
+        "culisele puterii",
+        "house of cards",
+        "하우스 오브 카드",
+        "картковий будинок",
+        "بيت من ورق",
+        "къща от карти ",
+        "紙牌屋",
+        "le château de cartes",
+        "خانه پوشالی",
+        "kāršu nams",
+        "kortų namelis",
+        "ハウス・オブ・カード 野望の階段",
+        "кућа од карата",
+        "เกมอำนาจ",
+        "ბანქოს სახლი",
+        "ván bài chính trị",
+        "紙牌屋",
+        "hiša iz kart"
+      ]
+    }
+  ],
+  "house of cards": [
+    {
+      "adult": false,
+      "backdrop_path": "/A3bigAAa4u6EbDvmMpDc0GNIEtG.jpg",
+      "genre_ids": [
+        18
+      ],
+      "id": 1425,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "House of Cards",
+      "overview": "Set in present day Washington, D.C., House of Cards is the story of Frank Underwood, a ruthless and cunning politician, and his wife Claire who will stop at nothing to conquer everything. This wicked political drama penetrates the shadowy world of greed, sex and corruption in modern D.C.",
+      "popularity": 25.1226,
+      "poster_path": "/hKWxWjFwnMvkWQawbhvC0Y7ygQ8.jpg",
+      "first_air_date": "2013-02-01",
+      "name": "House of Cards",
+      "vote_average": 8,
+      "vote_count": 3036,
+      "names": [
+        "house of cards"
+      ]
+    }
+  ],
+  "chernobyl": [
+    {
+      "adult": false,
+      "backdrop_path": "/3URK0z9PzpVNJrGE7XOuyy6KFzk.jpg",
+      "genre_ids": [
+        18
+      ],
+      "id": 87108,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Chernobyl",
+      "overview": "The true story of one of the worst man-made catastrophes in history: the catastrophic nuclear accident at Chernobyl. A tale of the brave men and women who sacrificed to save Europe from unimaginable disaster.",
+      "popularity": 23.0846,
+      "poster_path": "/hlLXt2tOPT6RRnjiUmoxyG1LTFi.jpg",
+      "first_air_date": "2019-05-06",
+      "name": "Chernobyl",
+      "vote_average": 8.699,
+      "vote_count": 7449,
+      "names": [
+        "chernobyl"
+      ]
+    }
+  ],
+  "euphoria": [
+    {
+      "adult": false,
+      "backdrop_path": "/9KnIzPCv9XpWA0MqmwiKBZvV1Sj.jpg",
+      "genre_ids": [
+        18
+      ],
+      "id": 85552,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Euphoria",
+      "overview": "A group of high school students navigate love and friendships in a world of drugs, sex, trauma, and social media.",
+      "popularity": 66.2486,
+      "poster_path": "/3Q0hd3heuWwDWpwcDkhQOA6TYWI.jpg",
+      "first_air_date": "2019-06-16",
+      "name": "Euphoria",
+      "vote_average": 8.286,
+      "vote_count": 10263,
+      "names": [
+        "euphoria"
+      ]
+    }
+  ],
+  "one punch man": [
+    {
+      "adult": false,
+      "backdrop_path": "/s0w8JbuNNxL1YgaHeDWih12C3jG.jpg",
+      "genre_ids": [
+        16,
+        35,
+        10759,
+        10765
+      ],
+      "id": 63926,
+      "origin_country": [
+        "JP"
+      ],
+      "original_language": "ja",
+      "original_name": "ワンパンマン",
+      "overview": "The most powerful superhero in the world can kill anyone with one blow. But nothing can challenge him, so he struggles with ennui and depression.",
+      "popularity": 40.7321,
+      "poster_path": "/dT10AxJIXVvRwFAew4tt2RhzJrD.jpg",
+      "first_air_date": "2015-10-05",
+      "name": "One-Punch Man",
+      "vote_average": 8.387,
+      "vote_count": 3978,
+      "names": [
+        "one-punch man",
+        "one-punch man",
+        "ванпанчмен",
+        "one-punch man",
+        "원펀맨",
+        "one punch man",
+        "one-punch man",
+        "一拳超人",
+        "one punch man",
+        "איש האגרוף הבודד",
+        "one punch man",
+        "one-punch man",
+        "วันพันช์แมน",
+        "one-punch man",
+        "one punch man",
+        "ванпанчмен",
+        "omul un-pumn",
+        "一拳超人",
+        "one punch man",
+        "one-punch man",
+        "one-punch man",
+        "one punch man",
+        "one punch man",
+        "thánh phồng tôm",
+        "one-punch man",
+        "one punch man",
+        "one punch man",
+        "уанпънчмен",
+        "one-punch man",
+        "човек један ударац",
+        "уанпанчмэн",
+        "مرد تک مشتی",
+        "一拳超人",
+        "one-punch man",
+        "one-punch man"
+      ]
+    }
+  ],
+  "pb 1x05": [],
+  "dm110720p": [],
+  "dark matter": [
+    {
+      "adult": false,
+      "backdrop_path": "/wFEAy4xRes1eeclsu7Z73Vzz7ET.jpg",
+      "genre_ids": [
+        10765,
+        18
+      ],
+      "id": 196322,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "Dark Matter",
+      "overview": "Jason Dessen is abducted into an alternate version of his life. To get back to his true family, he embarks on a harrowing journey to save them from the most terrifying foe imaginable: himself.",
+      "popularity": 10.6111,
+      "poster_path": "/c6MRUtPk0nEPQ9FBD9RdRKt2rIm.jpg",
+      "first_air_date": "2024-05-07",
+      "name": "Dark Matter",
+      "vote_average": 7.8,
+      "vote_count": 574,
+      "names": [
+        "dark matter"
+      ]
+    }
+  ]
+}

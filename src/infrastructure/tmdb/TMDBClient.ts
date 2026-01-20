@@ -43,7 +43,7 @@ export class TMDBClient {
     }
 
     const url = new URL(
-      "https://api.themoviedb.org/3/search/tv?include_adult=true&language=en-US&page=1"
+      "https://api.themoviedb.org/3/search/tv?include_adult=true&language=en-US&page=1",
     );
     url.searchParams.set("query", query);
 
@@ -56,7 +56,7 @@ export class TMDBClient {
     }).then((res) => res.json() as Promise<SearchResult>);
 
     this.logger.debug(
-      `[TMDB] Search API result: ${JSON.stringify(searchResult)}`
+      `[TMDB] Search API result: ${JSON.stringify(searchResult)}`,
     );
 
     const exactMatch = searchResult.results.find(({ name }) => {
@@ -67,12 +67,12 @@ export class TMDBClient {
 
     if (exactMatch) {
       this.logger.debug(
-        `[TMDB] Exact match found: ${JSON.stringify(exactMatch)}`
+        `[TMDB] Exact match found: ${JSON.stringify(exactMatch)}`,
       );
       result = [{ ...exactMatch, names: [exactMatch.name.toLowerCase()] }];
     } else {
       this.logger.debug(
-        `[TMDB] Exact match NOT found. Trying language variations`
+        `[TMDB] Exact match NOT found. Trying language variations`,
       );
       result = await Promise.all(
         searchResult.results.map(async (show) => {
@@ -81,10 +81,10 @@ export class TMDBClient {
             ...(await this.getLanguageVariations(show.id)),
           ].map((name) => name.toLowerCase());
           return { ...show, names };
-        })
+        }),
       );
       this.logger.debug(
-        `[TMDB] Language variations found: ${JSON.stringify(result)}`
+        `[TMDB] Language variations found: ${JSON.stringify(result)}`,
       );
     }
 
@@ -95,7 +95,7 @@ export class TMDBClient {
 
   private async getLanguageVariations(showId: number): Promise<string[]> {
     const url = new URL(
-      `https://api.themoviedb.org/3/tv/${showId}/translations`
+      `https://api.themoviedb.org/3/tv/${showId}/translations`,
     );
 
     const result = await fetch(url, {

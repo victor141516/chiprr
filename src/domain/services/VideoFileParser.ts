@@ -1,7 +1,12 @@
 import * as path from "path";
-import { longestCommonSubstring } from "string-algorithms";
 import { Logger } from "../../infrastructure/logging/Logger";
-import type { EpisodeInfo } from "../models/EpisodeInfo";
+
+export interface ParsedPathElement {
+  episode: number | null;
+  season: number | null;
+  bestEffortShowName: string;
+  type: "directory" | "file";
+}
 
 /**
  * Here is the logic to "smartly" extract information from the file path and file name
@@ -13,114 +18,49 @@ export class VideoFileParser {
     this.logger = logger;
   }
 
-  parse(filePath: string): EpisodeInfo & { parentDirectories: string[] } {
+  parse(filePath: string): ParsedPathElement[] {
     const parsedPath = this.parsePath(filePath);
-    const fileName = parsedPath.at(-1)!;
+    const result: ParsedPathElement[] = [];
 
-    const { matchedStrings, season, episode } =
-      this.findEpisodeAndSeason(fileName);
+    // Process each path element independently
+    for (let i = 0; i < parsedPath.length; i++) {
+      const part = parsedPath[i]!;
+      const isFile = i === parsedPath.length - 1;
 
-    // Remove extension
-    const initialCleanFilename = fileName
-      .replace(/\.[a-zA-Z0-9]{2,10}$/, "")
-      .trim();
-
-    this.logger.debug({ initialCleanFilename });
-
-    // Process FILENAME to remove garbage
-    const fullyCleanFilename = this.cleanFileName(
-      initialCleanFilename,
-      matchedStrings
-    );
-    this.logger.debug(`Fully clean filename: "${fullyCleanFilename}"`);
-    let showName: string;
-
-    // Extract and clean parent directories for matching
-    const parentDirectories: string[] = [];
-    if (parsedPath.length > 1) {
-      // Get directories from closest to furthest (reverse order)
-      for (let i = parsedPath.length - 2; i >= 0; i--) {
-        const directory = parsedPath[i]!;
-        const fullyCleanDir = this.cleanFileName(directory, matchedStrings);
-        if (fullyCleanDir.length > 3) {
-          // Only add meaningful directory names
-          parentDirectories.push(fullyCleanDir);
-        }
+      // Clean the name (remove extension for files)
+      let cleanName = part;
+      if (isFile) {
+        cleanName = part.replace(/\.[a-zA-Z0-9]{2,10}$/, "").trim();
       }
+
+      // Try to extract episode info from this element
+      let elementSeason: number | null = null;
+      let elementEpisode: number | null = null;
+      let elementMatchedStrings: string[] = [];
+
+      const episodeInfo = this.tryFindEpisodeAndSeason(part);
+      if (episodeInfo) {
+        elementSeason = episodeInfo.season;
+        elementEpisode = episodeInfo.episode;
+        elementMatchedStrings = episodeInfo.matchedStrings;
+      }
+
+      // Clean the name to get the best effort show name
+      const fullyCleanName = this.cleanFileName(
+        cleanName,
+        elementMatchedStrings,
+      );
+      const bestEffortShowName = this.trimGarbage(fullyCleanName);
+
+      result.push({
+        episode: elementEpisode,
+        season: elementSeason,
+        bestEffortShowName,
+        type: isFile ? "file" : "directory",
+      });
     }
 
-    if (parsedPath.length === 1) {
-      this.logger.debug(
-        "There are NOT directories in the path --> choosing the file name version"
-      );
-      showName = fullyCleanFilename;
-    } else {
-      this.logger.debug(
-        "There are directories in the path --> trying candidates"
-      );
-      let candidates: string[] = [];
-      // Traverse directories and try to find a good match
-      for (const directory of parsedPath.slice(0, -1)) {
-        // Process DIRECTORY to remove garbage
-        const fullyCleanDir = this.cleanFileName(directory, matchedStrings);
-        this.logger.debug(`Fully clean dir: "${fullyCleanDir}"`);
-
-        // If one directory completely matches the show name extracted from the filename, then it's surely the good one
-        if (fullyCleanDir.includes(fullyCleanFilename)) {
-          this.logger.debug("Perfect match");
-          candidates = longestCommonSubstring([
-            fullyCleanDir,
-            fullyCleanFilename,
-          ]);
-          break;
-        } else {
-          // If there is no full intersection, check partial intersections
-          const commonSubstrings = longestCommonSubstring([
-            fullyCleanDir,
-            fullyCleanFilename,
-          ]);
-
-          if (commonSubstrings.length > 0) {
-            const partialMatch = commonSubstrings[0]!;
-            this.logger.debug(`Partial match found: ${partialMatch}`);
-            candidates.push(partialMatch);
-          } else {
-            this.logger.debug(
-              `No match at all: "${fullyCleanDir}" vs "${fullyCleanFilename}"`
-            );
-          }
-        }
-      }
-
-      this.logger.debug({ candidates });
-      if (candidates.length > 0) {
-        const longerCandidate = candidates.sort(
-          (a, b) => b.length - a.length
-        )[0]!;
-        this.logger.debug({ longerCandidate });
-        if (longerCandidate.length > 3) {
-          this.logger.debug("Using partial match");
-          showName = longerCandidate;
-        } else {
-          showName = fullyCleanFilename;
-        }
-      } else {
-        this.logger.debug(
-          "No candidates found --> falling back to filename version"
-        );
-        this.logger.warn(`Not sure about this one: fileName: "${fileName}"`);
-        showName = fullyCleanFilename;
-      }
-    }
-
-    showName = this.trimGarbage(showName);
-
-    return {
-      showName,
-      season,
-      episode,
-      parentDirectories,
-    };
+    return result;
   }
 
   private parsePath(inputPath: string): string[] {
@@ -144,21 +84,21 @@ export class VideoFileParser {
 
   private cleanFileName(
     fileName: string,
-    episodeMatchedTexts: string[]
+    episodeMatchedTexts: string[],
   ): string {
     let showName = fileName;
 
     for (const episodeMatchedText of episodeMatchedTexts) {
       const episodeIndicatorPosition = fileName.indexOf(episodeMatchedText);
       this.logger.debug(
-        `Trying to remove "${episodeMatchedText}" from file name "${fileName}". Found at position: ${episodeIndicatorPosition}`
+        `Trying to remove "${episodeMatchedText}" from file name "${fileName}". Found at position: ${episodeIndicatorPosition}`,
       );
       if (episodeIndicatorPosition > 4) {
         showName = fileName
           .slice(0, episodeIndicatorPosition)
           .replace(/[\(\[\<]$/g, "");
         this.logger.debug(
-          `Cleaning file name. Step 1. showName: "${showName}"`
+          `Cleaning file name. Step 1. showName: "${showName}"`,
         );
       }
     }
@@ -191,7 +131,7 @@ export class VideoFileParser {
 
     showName = showName.replace(
       /\b(?:HDTV|720p|1080p|480p|WEB-DL|BluRay|DVDRip|x264|x265|HEVC|AAC|AC3)\b/gi,
-      ""
+      "",
     );
     this.logger.debug(`Cleaning file name. Step 6. showName: "${showName}"`);
 
@@ -228,11 +168,14 @@ export class VideoFileParser {
     return result;
   }
 
-  private findEpisodeAndSeason(fileName: string): {
+  /**
+   * Try to find episode and season information, returns null if not found
+   */
+  private tryFindEpisodeAndSeason(fileName: string): {
     matchedStrings: string[];
     season: number;
     episode: number;
-  } {
+  } | null {
     const patterns = [
       // S01E01, S1E1, etc.
       /[Ss](?<season>\d{1,2})[Ee](?<episode>\d{1,3})/,
@@ -274,9 +217,7 @@ export class VideoFileParser {
     }
 
     if (!season || !episode) {
-      throw new Error(
-        "Could not find season/episode information in file name: " + fileName
-      );
+      return null;
     }
 
     return {

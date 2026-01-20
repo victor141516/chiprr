@@ -42,15 +42,11 @@ export class FileOrganizer {
         return;
       }
 
-      // Parse the filename to extract episode info and parent directories
-      const { parentDirectories, ...episodeInfo } =
-        this.videoFileParser.parse(filePath);
+      // Parse the filename to extract episode info from all path elements
+      const parsedPathElements = this.videoFileParser.parse(filePath);
 
-      // Match the show name with TMDB, using parent directories if needed
-      const matchedInfo = await this.showMatcher.match(
-        episodeInfo,
-        parentDirectories
-      );
+      // Match the show name with TMDB using path elements
+      const matchedInfo = await this.showMatcher.match(parsedPathElements);
 
       // Create hard link in organized structure
       await this.hardLinkCreator.createLink(filePath, matchedInfo);
@@ -59,7 +55,7 @@ export class FileOrganizer {
     } catch (error) {
       if (error instanceof Error) {
         this.logger.error(
-          `Failed to organize file ${filePath}: ${error.message}`
+          `Failed to organize file ${filePath}: ${error.message}`,
         );
         throw error;
       }
