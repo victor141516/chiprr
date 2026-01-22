@@ -246,7 +246,10 @@ describe("ShowMatcher", () => {
   const logger = new Logger({ logLevel: "error", name: "ShowMatcher" });
 
   // Use dedicated test cache file in repository root
-  const cache = new TMDBCache("tmdb-test-cache.json");
+  const cache = new TMDBCache({
+    cacheFilePath: "tmdb-test-cache.json",
+    logger: new Logger({ logLevel: "error", name: "TMDBCache" }),
+  });
 
   // Get API token from environment or use empty string (will use cache)
   const apiToken = process.env.TMDB_TOKEN || "";

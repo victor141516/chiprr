@@ -50,7 +50,7 @@ async function runWatchMode(fileOrganizer: FileOrganizer, mainLogger: Logger) {
 
 async function runExecuteMode(
   fileOrganizer: FileOrganizer,
-  mainLogger: Logger
+  mainLogger: Logger,
 ) {
   mainLogger.info("Starting execute mode - scanning input directory...");
 
@@ -63,7 +63,7 @@ async function runExecuteMode(
 
   // Scan directory recursively
   const allFiles = await directoryScanner.scanRecursively(
-    config.inputDirectory
+    config.inputDirectory,
   );
 
   // Filter video files
@@ -85,7 +85,7 @@ async function runExecuteMode(
   }
 
   mainLogger.info(
-    `Execute mode completed: ${successCount} files processed successfully, ${errorCount} errors`
+    `Execute mode completed: ${successCount} files processed successfully, ${errorCount} errors`,
   );
   process.exit(0);
 }
@@ -99,7 +99,10 @@ async function main() {
   });
   const tmdbClient = new TMDBClient({
     apiToken: config.tmdbToken,
-    cache: new TMDBCache(config.cacheFilePath),
+    cache: new TMDBCache({
+      cacheFilePath: config.cacheFilePath,
+      logger: new Logger({ logLevel: config.logLevel, name: "TMDBCache" }),
+    }),
     logger: new Logger({ logLevel: config.logLevel, name: "TMDBClient" }),
   });
 
