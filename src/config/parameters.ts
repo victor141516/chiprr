@@ -63,24 +63,24 @@ function parseArguments(): AppConfig {
   const cacheFilePath =
     argv["cache-file-path"] ||
     process.env.CACHE_FILE_PATH ||
-    ".cache/tmdb-cache.json";
+    ".cache/tmdb-cache.jsonl";
   const mode = argv["mode"] as AppConfig["mode"];
 
   if (!inputDirectory) {
     throw new Error(
-      "Input directory is required. Provide via --input-directory or INPUT_DIRECTORY env var"
+      "Input directory is required. Provide via --input-directory or INPUT_DIRECTORY env var",
     );
   }
 
   if (!sortedDirectory) {
     throw new Error(
-      "Sorted directory is required. Provide via --sorted-directory or SORTED_DIRECTORY env var"
+      "Sorted directory is required. Provide via --sorted-directory or SORTED_DIRECTORY env var",
     );
   }
 
   if (!tmdbToken) {
     throw new Error(
-      "TMDB token is required. Provide via --tmdb-token or TMDB_TOKEN env var"
+      "TMDB token is required. Provide via --tmdb-token or TMDB_TOKEN env var",
     );
   }
 
