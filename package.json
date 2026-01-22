@@ -17,6 +17,7 @@
   "dependencies": {
     "@types/yargs": "^17.0.35",
     "chokidar": "5.0.0",
+    "ignore": "^7.0.5",
     "mitt": "3.0.1",
     "string-algorithms": "1.0.31",
     "winston": "3.19.0",

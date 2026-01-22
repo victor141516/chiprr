@@ -200,16 +200,63 @@
 ##### DirectoryScanner
 
 - **Purpose**: Recursively scan directories for video files
-- Filters for video extensions
+- **Location**: `src/infrastructure/filesystem/DirectoryScanner.ts`
+- **Key Features**:
+  - Recursive directory traversal
+  - Filters for video extensions
+  - Integrates with IgnoreFilter to skip unwanted files
+  - Skips `.chiprrignore` files themselves
 
 ##### FileWatcher
 
 - **Purpose**: Watch for new files and trigger organization
-- Uses `chokidar` for cross-platform file watching
+- **Location**: `src/infrastructure/filesystem/FileWatcher.ts`
+- **Key Features**:
+  - Uses `chokidar` for cross-platform file watching
+  - Integrates with IgnoreFilter to skip unwanted files
+  - Skips `.chiprrignore` files themselves
+  - Emits events for file creation, errors, and ready state
+
+##### IgnoreFilter
+
+- **Purpose**: Filter files based on `.chiprrignore` patterns
+- **Location**: `src/infrastructure/filesystem/IgnoreFilter.ts`
+- **Key Features**:
+  - Supports gitignore-style pattern matching using the `ignore` library
+  - Empty `.chiprrignore` file ignores all files in directory and subdirectories
+  - Non-empty `.chiprrignore` file uses gitignore patterns
+  - Hierarchical: rules from parent directories apply to children
+  - Caches parsed ignore rules for performance
+  - Supports all gitignore patterns: globs, negation, comments, directory patterns
+
+**Implementation Details**:
+
+1. **Pattern Matching**:
+   - Uses the `ignore` npm package for gitignore semantics
+   - Supports wildcards (`*.log`), negation (`!important.txt`), directories (`extras/`)
+   - Comments (`# comment`) are ignored
+   - Patterns are relative to the directory containing the `.chiprrignore` file
+
+2. **Empty File Behavior**:
+   - If `.chiprrignore` file is empty or contains only whitespace
+   - All files in that directory and subdirectories are ignored
+   - Useful for excluding entire show directories
+
+3. **Hierarchical Rules**:
+   - Walks up directory tree from file to base path
+   - Checks each directory for `.chiprrignore` file
+   - First matching rule wins (closest to file)
+   - Parent rules apply to all children
+
+4. **Caching**:
+   - Parsed ignore rules cached per directory
+   - Cache can be cleared with `clearCache()` method
+   - Improves performance during batch operations
 
 ##### HardLinkCreator
 
 - **Purpose**: Create hard links instead of copying files
+- **Location**: `src/infrastructure/filesystem/HardLinkCreator.ts`
 - Preserves disk space while creating organized structure
 
 #### Logging
@@ -333,13 +380,31 @@ for (const { filePath, result } of testCases) {
 
 #### ShowMatcher Tests
 
-- **Status**: Currently missing (to be implemented)
-- **Planned Coverage**:
-  - Use same test cases from VideoFileParser
+- **Location**: `src/domain/services/ShowMatcher.test.ts`
+- **Test Cases**: 33 test cases using real TMDB data
+- **Coverage**:
   - Verify TMDB matching works correctly
   - Test iterative directory fallback
   - Test diacritics handling
-  - Test error cases
+  - Test international show names (Spanish, etc.)
+  - Uses cached TMDB responses for consistent testing
+
+#### IgnoreFilter Tests
+
+- **Location**: `src/infrastructure/filesystem/IgnoreFilter.test.ts`
+- **Test Cases**: 19 comprehensive tests
+- **Coverage**:
+  - Empty `.chiprrignore` file behavior (ignore all)
+  - Pattern matching (globs, wildcards, negation)
+  - Directory patterns
+  - Hierarchical rules (parent and child directories)
+  - Cache management
+  - Edge cases (whitespace-only files, complex structures)
+  - Real-world patterns (sample files, subtitles, extras)
+- **Test Infrastructure**:
+  - Uses temporary directories for isolated testing
+  - Creates actual `.chiprrignore` files and directory structures
+  - Tests both DirectoryScanner and FileWatcher integration
 
 ### Test Infrastructure
 
@@ -365,6 +430,7 @@ for (const { filePath, result } of testCases) {
 - **`yargs`**: CLI argument parsing
 - **`string-algorithms`**: Longest common substring calculation
 - **`vitest`**: Testing framework
+- **`ignore`**: Gitignore-style pattern matching for `.chiprrignore` files
 
 ### APIs
 

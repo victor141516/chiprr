@@ -17,6 +17,7 @@ A lightweight, simple alternative to Sonarr for automatically organizing TV show
 - 🔍 **TMDB Integration** - Uses The Movie Database API to normalize and match show names
 - 🌍 **International Support** - Handles diacritics and multiple language variations
 - 📝 **Flexible Filename Parsing** - Works with various release formats and naming conventions
+- 🚫 **Ignore Files Support** - Use `.chiprrignore` files to exclude unwanted files and directories (gitignore syntax)
 
 ## Why chiprr?
 
@@ -226,6 +227,91 @@ Output structure:
 - `Cap.101` - Spanish/Portuguese format (Capitulo)
 - `E01`, `Ep01` - Episode only format
 
+## Ignoring Files with .chiprrignore
+
+chiprr supports `.chiprrignore` files to exclude unwanted files and directories from processing. This feature uses gitignore syntax and works hierarchically.
+
+### How It Works
+
+Place a `.chiprrignore` file in any directory within your input directory. The ignore rules will apply to that directory and all its subdirectories.
+
+### Empty .chiprrignore File
+
+An **empty** `.chiprrignore` file will ignore **all files** in that directory and its subdirectories:
+
+```bash
+# Create an empty .chiprrignore to ignore everything in this directory
+touch /downloads/unwanted-show/.chiprrignore
+```
+
+### Pattern-Based Ignoring
+
+A **non-empty** `.chiprrignore` file uses gitignore syntax to selectively ignore files:
+
+```gitignore
+# Ignore sample files
+*sample*
+*SAMPLE*
+
+# Ignore subtitle files
+*.srt
+*.sub
+*.ass
+
+# Ignore NFO and metadata files
+*.nfo
+*.txt
+
+# But keep important files
+!important.txt
+
+# Ignore specific directories
+extras/
+Extras/
+behind.the.scenes/
+```
+
+### Example Directory Structure
+
+```
+/downloads/
+├── .chiprrignore              # Applies to all subdirectories
+├── Breaking Bad/
+│   ├── Season 1/
+│   │   ├── episode1.mkv       # ✓ Processed
+│   │   ├── episode1.srt       # ✗ Ignored (if *.srt in .chiprrignore)
+│   │   └── sample.mkv         # ✗ Ignored (if *sample* in .chiprrignore)
+│   └── extras/                # ✗ Ignored (if extras/ in .chiprrignore)
+│       └── interview.mkv
+└── unwanted-show/
+    ├── .chiprrignore          # Empty file - ignores everything
+    └── episode.mkv            # ✗ Ignored (empty .chiprrignore in parent)
+```
+
+### Supported Patterns
+
+chiprr uses the [`ignore`](https://github.com/kaelzhang/node-ignore) library, which fully implements gitignore specification:
+
+- `*.log` - Ignore all .log files
+- `**/*.tmp` - Ignore .tmp files in any subdirectory
+- `!important.txt` - Negation: don't ignore this file
+- `folder/` - Ignore entire directory
+- `*sample*` - Ignore files containing "sample"
+- `# comment` - Comments are ignored
+
+### Hierarchical Rules
+
+Rules from parent directories apply to child directories. You can have multiple `.chiprrignore` files at different levels:
+
+```
+/downloads/
+├── .chiprrignore              # Global rules (e.g., *.srt)
+└── Show Name/
+    ├── Season 1/
+    │   └── .chiprrignore      # Additional rules for this season
+    └── Season 2/
+```
+
 ## How It Works
 
 1. **File Watching**: Uses chokidar to monitor the input directory for new files
@@ -233,6 +319,7 @@ Output structure:
 3. **Show Matching**: Queries TMDB API to find the correct show name and handles variations
 4. **Smart Matching**: Falls back to fuzzy matching and diacritics removal if exact match isn't found
 5. **File Organization**: Creates hard links in a clean directory structure without duplicating data
+6. **Ignore Filtering**: Checks `.chiprrignore` files to skip unwanted files and directories
 
 ## Development
 
