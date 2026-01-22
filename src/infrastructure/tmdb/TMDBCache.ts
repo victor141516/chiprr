@@ -1,6 +1,7 @@
 import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";
+import { Logger } from "../logging/Logger";
 
 export interface CachedShow {
   names: string[];
@@ -8,31 +9,38 @@ export interface CachedShow {
   name: string;
 }
 
-// TODO: use logger
 export class TMDBCache {
   private cache: Map<string, CachedShow[]> = new Map();
   private cacheFilePath: string;
   private saveTimeout: NodeJS.Timeout | null = null;
   private readonly SAVE_DELAY_MS = 1000; // Debounce writes by 1 second
+  private logger: Logger;
 
-  constructor(cacheFilePath?: string) {
+  constructor({
+    cacheFilePath,
+    logger,
+  }: {
+    cacheFilePath?: string;
+    logger: Logger;
+  }) {
     // Default cache file path in .cache directory
     this.cacheFilePath =
       cacheFilePath || path.join(process.cwd(), ".cache", "tmdb-cache.json");
+    this.logger = logger;
     this.loadCache();
   }
 
   private loadCache(): void {
     try {
       if (fsSync.existsSync(this.cacheFilePath)) {
-        console.log("Loading TMDB cache from", this.cacheFilePath);
+        this.logger.info(`Loading TMDB cache from ${this.cacheFilePath}`);
         const data = fsSync.readFileSync(this.cacheFilePath, "utf-8");
         const parsed = JSON.parse(data);
         this.cache = new Map(Object.entries(parsed));
       }
     } catch (error) {
       // If cache file is corrupted or doesn't exist, start with empty cache
-      console.warn("Failed to load TMDB cache, starting fresh:", error);
+      this.logger.warn(`Failed to load TMDB cache, starting fresh: ${error}`);
       this.cache = new Map();
     }
   }
@@ -62,8 +70,9 @@ export class TMDBCache {
         JSON.stringify(cacheObject, null, 2),
         "utf-8",
       );
+      this.logger.debug(`Saved TMDB cache to ${this.cacheFilePath}`);
     } catch (error) {
-      console.error("Failed to save TMDB cache:", error);
+      this.logger.error(`Failed to save TMDB cache: ${error}`);
     }
   }
 
