@@ -230,44 +230,39 @@ describe("IgnoreFilter", () => {
     });
   });
 
-  describe("cache management", () => {
-    it("should cache ignore rules for performance", async () => {
-      // Create .chiprrignore
+  describe("real-time updates", () => {
+    it("should reflect changes to .chiprrignore immediately", async () => {
+      // Create .chiprrignore that ignores .log files
       await fs.writeFile(path.join(testDir, ".chiprrignore"), "*.log");
 
-      const testFile = path.join(testDir, "test.log");
-      await fs.writeFile(testFile, "");
+      const logFile = path.join(testDir, "test.log");
+      await fs.writeFile(logFile, "");
 
-      // First call - loads from file
-      const result1 = await ignoreFilter.shouldIgnore(testFile, testDir);
+      // First call - should ignore
+      expect(await ignoreFilter.shouldIgnore(logFile, testDir)).toBe(true);
 
-      // Second call - should use cache
-      const result2 = await ignoreFilter.shouldIgnore(testFile, testDir);
+      // Update .chiprrignore to not ignore .log files
+      await fs.writeFile(path.join(testDir, ".chiprrignore"), "*.tmp");
 
-      expect(result1).toBe(true);
-      expect(result2).toBe(true);
-    });
-
-    it("should clear cache when requested", async () => {
-      // Create .chiprrignore
-      await fs.writeFile(path.join(testDir, ".chiprrignore"), "*.log");
-
-      const testFile = path.join(testDir, "test.log");
-      await fs.writeFile(testFile, "");
-
-      // Load into cache
-      await ignoreFilter.shouldIgnore(testFile, testDir);
-
-      // Clear cache
-      ignoreFilter.clearCache();
-
-      // Should still work after cache clear
-      const result = await ignoreFilter.shouldIgnore(testFile, testDir);
-      expect(result).toBe(true);
+      // Second call - should NOT ignore (change is reflected immediately)
+      expect(await ignoreFilter.shouldIgnore(logFile, testDir)).toBe(false);
     });
   });
 
   describe("edge cases", () => {
+    it("should check root .chiprrignore for files at root level", async () => {
+      // Create .chiprrignore at root
+      await fs.writeFile(path.join(testDir, ".chiprrignore"), "*.log");
+
+      const logFile = path.join(testDir, "test.log");
+      const mkvFile = path.join(testDir, "video.mkv");
+      await fs.writeFile(logFile, "");
+      await fs.writeFile(mkvFile, "");
+
+      expect(await ignoreFilter.shouldIgnore(logFile, testDir)).toBe(true);
+      expect(await ignoreFilter.shouldIgnore(mkvFile, testDir)).toBe(false);
+    });
+
     it("should handle .chiprrignore with only whitespace as empty", async () => {
       // Create .chiprrignore with only whitespace
       await fs.writeFile(path.join(testDir, ".chiprrignore"), "   \n\n  \t  ");

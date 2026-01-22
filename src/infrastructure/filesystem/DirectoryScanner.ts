@@ -2,6 +2,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { Logger } from "../logging/Logger";
 import { IgnoreFilter } from "./IgnoreFilter";
+import { config } from "../../config/parameters";
 
 export class DirectoryScanner {
   private logger: Logger;
@@ -9,7 +10,9 @@ export class DirectoryScanner {
 
   constructor({ logger }: { logger: Logger }) {
     this.logger = logger;
-    this.ignoreFilter = new IgnoreFilter({ logger });
+    this.ignoreFilter = new IgnoreFilter({
+      logger: new Logger({ logLevel: config.logLevel, name: "IgnoreFilter" }),
+    });
   }
 
   async scanRecursively(directoryPath: string): Promise<string[]> {
@@ -37,10 +40,7 @@ export class DirectoryScanner {
       for (const entry of entries) {
         const fullPath = path.join(directoryPath, entry.name);
 
-        // Skip .chiprrignore files themselves
-        if (entry.name === ".chiprrignore") continue;
-
-        // Check if path should be ignored
+        // Check if path should be ignored (also handles .chiprrignore files)
         if (await this.ignoreFilter.shouldIgnore(fullPath, basePath)) {
           this.logger.debug(`Ignoring: ${fullPath}`);
           continue;

@@ -4,6 +4,7 @@ import { exists } from "fs/promises";
 import path from "path";
 import { Logger } from "../logging/Logger";
 import { IgnoreFilter } from "./IgnoreFilter";
+import { config } from "../../config/parameters";
 
 type FileWatcherEvents = {
   fileCreated: {
@@ -36,7 +37,9 @@ export class FileWatcher {
     this.directoryPath = directoryPath;
     this.logger = logger;
     this.emitter = mitt<FileWatcherEvents>();
-    this.ignoreFilter = new IgnoreFilter({ logger });
+    this.ignoreFilter = new IgnoreFilter({
+      logger: new Logger({ logLevel: config.logLevel, name: "IgnoreFilter" }),
+    });
   }
 
   async start(): Promise<Emitter<FileWatcherEvents>> {
@@ -57,15 +60,15 @@ export class FileWatcher {
     });
 
     this.watcher.on("add", async (filePath: string) => {
+      this.logger.info(`New file detected: ${filePath}`);
       const fileName = path.basename(filePath);
-
-      // Skip .chiprrignore files themselves
-      if (fileName === ".chiprrignore") return;
 
       // Check if file should be ignored
       if (await this.ignoreFilter.shouldIgnore(filePath, this.directoryPath)) {
-        this.logger.debug(`Ignoring watched file: ${filePath}`);
+        this.logger.info(`Ignoring watched file: ${filePath}`);
         return;
+      } else {
+        this.logger.debug(`NOT Ignoring watched file: ${filePath}`);
       }
 
       this.emitter.emit("fileCreated", {
