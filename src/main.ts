@@ -95,6 +95,7 @@ async function main() {
   const mainLogger = new Logger({ logLevel: config.logLevel, name: "Main" });
   const hardLinkCreator = new HardLinkCreator({
     sortedDirectory: config.sortedDirectory,
+    replaceIfExtists: config.replaceIfExtists,
     logger: new Logger({ logLevel: config.logLevel, name: "HardLinkCreator" }),
   });
   const tmdbClient = new TMDBClient({

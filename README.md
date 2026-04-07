@@ -116,6 +116,7 @@ node main.js \
   --tmdb-token your_tmdb_api_token \
   --log-level debug \
   --cache-file-path /app-cache/tmdb.json \
+  --replace-if-exists \
   --mode watch
 
 # Execute mode (one-time scan)
@@ -123,6 +124,7 @@ node main.js \
   --input-directory /path/to/downloads \
   --sorted-directory /path/to/organized/shows \
   --tmdb-token your_tmdb_api_token \
+  --replace-if-exists \
   --mode execute
 ```
 
@@ -134,18 +136,20 @@ export SORTED_DIRECTORY=/path/to/organized/shows
 export TMDB_TOKEN=your_tmdb_api_token
 export LOG_LEVEL=info
 export CACHE_FILE_PATH=/path/to/cache.json
+export REPLACE_IF_EXISTS=true
 ```
 
 ### Options
 
-| Option               | Short | Environment Variable | Description                                                       | Required                               |
-| -------------------- | ----- | -------------------- | ----------------------------------------------------------------- | -------------------------------------- |
-| `--input-directory`  | `-i`  | `INPUT_DIRECTORY`    | Directory to watch for new video files                            | Yes                                    |
-| `--sorted-directory` | `-s`  | `SORTED_DIRECTORY`   | Directory where organized files will be linked                    | Yes                                    |
-| `--tmdb-token`       | `-t`  | `TMDB_TOKEN`         | TMDB API token for show name matching                             | Yes                                    |
-| `--mode`             | `-m`  | -                    | Execution mode: `watch` (continuous) or `execute` (one-time scan) | No (default: watch)                    |
-| `--log-level`        | `-l`  | `LOG_LEVEL`          | Logging level (error, warn, info, debug)                          | No (default: info)                     |
-| `--cache-file-path`  | `-c`  | `CACHE_FILE_PATH`    | Path to the cache for TMDB API requests                           | No (default: ./.cache/tmdb-cache.json) |
+| Option                 | Short | Environment Variable | Description                                                        | Required                                |
+| ---------------------- | ----- | ------------------- | ------------------------------------------------------------------ | --------------------------------------- |
+| `--input-directory`    | `-i`  | `INPUT_DIRECTORY`   | Directory to watch for new video files                             | Yes                                     |
+| `--sorted-directory`   | `-s`  | `SORTED_DIRECTORY`  | Directory where organized files will be linked                     | Yes                                     |
+| `--tmdb-token`         | `-t`  | `TMDB_TOKEN`        | TMDB API token for show name matching                              | Yes                                     |
+| `--replace-if-exists`  | `-f`  | `REPLACE_IF_EXISTS` | Replace destination file if it already exists                       | No (default: false)                     |
+| `--mode`               | `-m`  | -                   | Execution mode: `watch` (continuous) or `execute` (one-time scan) | No (default: watch)                     |
+| `--log-level`          | `-l`  | `LOG_LEVEL`         | Logging level (error, warn, info, debug)                           | No (default: info)                      |
+| `--cache-file-path`    | `-c`  | `CACHE_FILE_PATH`   | Path to the cache for TMDB API requests                            | No (default: ./.cache/tmdb-cache.jsonl) |
 
 ## Getting a TMDB Token
 
