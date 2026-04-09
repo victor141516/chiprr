@@ -1,4 +1,4 @@
-import { configure, customConfigElement } from "konfuz";
+import { configure, customConfigElement, printConfiguredSources } from "konfuz";
 import { z } from "zod";
 
 export interface AppConfig {
@@ -12,35 +12,38 @@ export interface AppConfig {
 }
 
 const config = configure({
-  inputDirectory: customConfigElement(z.string(), {
+  inputDirectory: customConfigElement({
+    type: z.string(),
     cmdDescription: "Directory to watch for new video files",
   }),
-  sortedDirectory: customConfigElement(z.string(), {
+  sortedDirectory: customConfigElement({
+    type: z.string(),
     cmdDescription: "Directory where organized files will be linked",
   }),
-  tmdbToken: customConfigElement(z.string(), {
+  tmdbToken: customConfigElement({
+    type: z.string(),
     cmdDescription: "TMDB API token",
   }),
-  logLevel: customConfigElement(
-    z.enum(["error", "warn", "info", "debug"]).default("info"),
-    {
-      cmdDescription: "Log level",
-    },
-  ),
-  cacheFilePath: customConfigElement(
-    z.string().default(".cache/tmdb-cache.jsonl"),
-    {
-      cmdDescription: "Path to TMDB cache file",
-    },
-  ),
-  replaceIfExtists: customConfigElement(z.boolean().default(false), {
+  logLevel: customConfigElement({
+    type: z.enum(["error", "warn", "info", "debug"]).default("info"),
+    cmdDescription: "Log level",
+  }),
+  cacheFilePath: customConfigElement({
+    type: z.string().default(".cache/tmdb-cache.jsonl"),
+    cmdDescription: "Path to TMDB cache file",
+  }),
+  replaceIfExtists: customConfigElement({
+    type: z.boolean().default(false),
     cmdNameShort: "f",
     cmdDescription: "Replace destination file if it already exists",
   }),
-  mode: customConfigElement(z.enum(["watch", "execute"]).default("watch"), {
+  mode: customConfigElement({
+    type: z.enum(["watch", "execute"]).default("watch"),
     cmdDescription:
       "Execution mode: watch for continuous monitoring or execute for one-time scan",
   }),
 });
+
+printConfiguredSources(config);
 
 export { config };
