@@ -64,6 +64,7 @@ export class ShowMatcher {
 
     if (foundMatch) {
       return {
+        kind: "show",
         showName: matchedName,
         season,
         episode,
@@ -104,6 +105,7 @@ export class ShowMatcher {
             `Perfect match found with parent directory: "${directory.bestEffortShowName}" -> "${matchedName}"`,
           );
           return {
+            kind: "show",
             showName: matchedName,
             season,
             episode,
@@ -134,6 +136,7 @@ export class ShowMatcher {
         }". Using first search result: "${searchResult[0]!.name}"`,
       );
       return {
+        kind: "show",
         showName: searchResult[0]!.name,
         season,
         episode,

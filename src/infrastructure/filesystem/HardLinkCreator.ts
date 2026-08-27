@@ -1,60 +1,50 @@
 import * as fs from "fs/promises";
 import path from "path";
-import type { EpisodeInfo } from "../../domain/models/EpisodeInfo";
+import type { MatchedMedia } from "../../domain/models/MatchedMedia";
+import { buildDestinationPath } from "../../domain/services/MediaPathBuilder";
 import { Logger } from "../logging/Logger";
 
 export class HardLinkCreator {
   private sortedDirectory: string;
-  private replaceIfExtists: boolean;
+  private replaceIfExists: boolean;
   private logger: Logger;
 
   constructor({
     sortedDirectory,
-    replaceIfExtists,
+    replaceIfExists,
     logger,
   }: {
     sortedDirectory: string;
-    replaceIfExtists: boolean;
+    replaceIfExists: boolean;
     logger: Logger;
   }) {
     this.sortedDirectory = sortedDirectory;
-    this.replaceIfExtists = replaceIfExtists;
+    this.replaceIfExists = replaceIfExists;
     this.logger = logger;
   }
 
-  async createLink(
-    originalPath: string,
-    episodeInfo: EpisodeInfo,
-  ): Promise<void> {
-    const extension = originalPath.split(".").at(-1)!;
-
-    const parentDir = path.join(
-      this.sortedDirectory,
-      episodeInfo.showName,
-      `Season ${episodeInfo.season}`,
-    );
+  async createLink(originalPath: string, media: MatchedMedia): Promise<void> {
+    const destinationPath = buildDestinationPath({
+      sortedDirectory: this.sortedDirectory,
+      originalPath,
+      media,
+    });
+    const parentDir = path.dirname(destinationPath);
 
     await fs.mkdir(parentDir, { recursive: true });
 
-    const fileName = `${episodeInfo.showName} S${episodeInfo.season
-      .toString()
-      .padStart(2, "0")}E${episodeInfo.episode
-      .toString()
-      .padStart(2, "0")}.${extension}`;
-    const destinationPath = path.join(parentDir, fileName);
-
     this.logger.info(`Linking "${originalPath}" to "${destinationPath}"`);
 
-    if (this.replaceIfExtists) {
+    if (this.replaceIfExists) {
       try {
         await fs.unlink(destinationPath);
       } catch (error) {
         if (
           error instanceof Error &&
           "code" in error &&
-          error.code !== "ENOENT"
+          error.code === "ENOENT"
         ) {
-          // Ignore if file doesn't exist
+          // There is no old link to remove.
         } else {
           throw error;
         }

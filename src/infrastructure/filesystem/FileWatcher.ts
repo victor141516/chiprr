@@ -4,9 +4,8 @@ import { exists } from "fs/promises";
 import path from "path";
 import { Logger } from "../logging/Logger";
 import { IgnoreFilter } from "./IgnoreFilter";
-import { config } from "../../config/parameters";
 
-type FileWatcherEvents = {
+export type FileWatcherEvents = {
   fileCreated: {
     filePath: string;
     fileName: string;
@@ -38,7 +37,7 @@ export class FileWatcher {
     this.logger = logger;
     this.emitter = mitt<FileWatcherEvents>();
     this.ignoreFilter = new IgnoreFilter({
-      logger: new Logger({ logLevel: config.logLevel, name: "IgnoreFilter" }),
+      logger,
     });
   }
 

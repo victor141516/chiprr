@@ -7,343 +7,337 @@
 
 # chiprr
 
-A lightweight, simple alternative to Sonarr for automatically organizing TV show files. chiprr watches a directory for new video files and organizes them into a clean folder structure using hard links.
+A lightweight organizer for completed TV-show and movie downloads. Chiprr watches completed-download directories, identifies video files with TMDB, and creates canonical hard links in media-library directories.
+
+It does not choose or manage downloads, maintain a catalog database, or move the original files. qBittorrent, a manual download workflow, or another tool remains in control of downloads; Chiprr only organizes completed video files.
 
 ## Features
 
-- 🎬 **Automatic TV Show Organization** - Watches for new video files and organizes them into `Show Name/Season X/` structure
-- 📁 **Hard Link Creation** - Creates hard links instead of copying files, saving disk space
-- 🎯 **Smart Episode Detection** - Supports multiple naming formats (S01E01, 1x01, Cap.101, etc.)
-- 🔍 **TMDB Integration** - Uses The Movie Database API to normalize and match show names
-- 🌍 **International Support** - Handles diacritics and multiple language variations
-- 📝 **Flexible Filename Parsing** - Works with various release formats and naming conventions
-- 🚫 **Ignore Files Support** - Use `.chiprrignore` files to exclude unwanted files and directories (gitignore syntax)
+- **TV-show organization** into `Show Name/Season N/Show Name SxxEyy.ext`.
+- **Movie organization** into a flat `Movie Title (Year).ext` directory.
+- **Hard links** preserve the completed download without duplicating its data.
+- **TMDB matching** resolves canonical English titles from English or localized input names.
+- **Movie-year disambiguation** distinguishes titles with multiple releases.
+- **Watch mode** handles newly completed files without scanning old files at startup.
+- **Execute mode** performs an explicit recursive scan for recovery or initial imports.
+- **Independent pipelines** let a show failure and movie failure remain isolated.
+- **Persistent, namespaced TMDB cache** avoids collisions between movies and shows.
+- **`.chiprrignore` support** applies gitignore-style rules to both input trees.
+- **Cross-platform canonical names** are safe on Linux, macOS, and Windows.
 
-## Why chiprr?
+## Intended workflow
 
-**Sometimes you just want your files organized.**
-
-If you've ever felt that Sonarr is overkill for your needs, chiprr might be for you. Here's what makes it different:
-
-### 🎯 Stay in Control
-
-With chiprr, you choose what to download and when. Use your favorite torrent client, download manager, or even copy files manually. chiprr doesn't care how the files get there - it just organizes them when they arrive.
-
-### 🚀 Zero Configuration Media Management
-
-No need to:
-
-- Set up a web interface
-- Configure quality profiles
-- Manage indexers
-- Track upcoming episodes
-- Maintain a database
-
-Just point chiprr at your download folder and your media library, and you're done.
-
-### 🔧 Works With Your Existing Workflow
-
-Whether you:
-
-- Manually select torrents based on specific encoders or quality
-- Use RSS feeds from your favorite trackers
-- Download from Usenet, DDL, or anywhere else
-- Have someone else managing the downloads
-
-chiprr simply watches and organizes. Your downloads, your rules.
-
-### 📺 Perfect for Jellyfin/Plex
-
-chiprr organizes your files exactly how media servers expect them:
-
-```
-TV Shows/
-├── Breaking Bad/
-│   ├── Season 1/
-│   │   ├── Breaking Bad S01E01.mkv
-│   │   ├── Breaking Bad S01E02.mkv
-│   │   └── ...
-│   └── Season 2/
-│       └── ...
-└── Better Call Saul/
-    └── ...
+```text
+qBittorrent incomplete directory
+        │ download completes
+        ▼
+qBittorrent completed Shows/Movies directories
+        │ Chiprr watches only these completed directories
+        ▼
+Chiprr creates hard links
+        ▼
+Organized Shows/Movies library
+        │
+        └── Jellyfin, Plex, Nestrr, or another media catalog
 ```
 
-No complex setup, no metadata agents, no confusion. Just clean, organized files that any media server can understand.
+Chiprr has no API, webhook, or database relationship with the media catalog. The canonical filesystem layout is the contract.
 
-### 💡 When to Use chiprr
+## Library layout
 
-chiprr is perfect if you:
+### TV shows
 
-- Already have a download workflow you're happy with
-- Want to keep using your favorite torrent client
-- Prefer to hand-pick your downloads
-- Need something that "just works" without complex configuration
-- Want your files organized for Jellyfin/Plex/Emby/Kodi
+Input:
 
-chiprr is **not** for you if you:
+```text
+/data/downloads/completed/Shows/Breaking.Bad.S01E03.720p.BluRay.x264.mkv
+```
 
-- Want fully automated downloading based on air dates
-- Need complex quality upgrade rules
-- Want to track your watching progress
-- Prefer an all-in-one solution with web UI
+Output hard link:
+
+```text
+/data/library/Shows/Breaking Bad/Season 1/Breaking Bad S01E03.mkv
+```
+
+### Movies
+
+Input:
+
+```text
+/data/downloads/completed/Movies/Jurassic.Park.1993.1080p.BluRay.x264-GROUP.mkv
+```
+
+Output hard link:
+
+```text
+/data/library/Movies/Jurassic Park (1993).mkv
+```
+
+The movie library is flat: Chiprr does not create a directory per movie. It includes TMDB's release year whenever one is available and preserves the original video extension.
+
+## Requirements
+
+- Bun.
+- A TMDB API Read Access Token.
+- Read access to completed-download directories.
+- Write access to organized-library directories.
+- A filesystem that supports hard links.
+- Every input directory and its corresponding library directory must be on the same filesystem.
+
+Hard links cannot cross filesystems. In Docker, mount a common parent such as `/srv/media-data:/data` instead of mounting completed and library directories as unrelated volumes. Separate bind mounts may behave as different mount points even when their host paths live on the same disk.
 
 ## Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/chiprr.git
+git clone https://github.com/victor141516/chiprr.git
 cd chiprr
+bun install --frozen-lockfile
+```
 
-# Install dependencies
-npm install
+Run locally:
 
-# Build the project
-npm run build
+```bash
+bun run src/main.ts \
+  --input-directory /data/downloads/completed/Shows \
+  --sorted-directory /data/library/Shows \
+  --movie-input-directory /data/downloads/completed/Movies \
+  --movie-sorted-directory /data/library/Movies \
+  --tmdb-token "$TMDB_TOKEN"
 ```
 
 ## Configuration
 
-chiprr can be configured using command-line arguments or environment variables:
+Command-line arguments override environment variables. Environment variables override `.env` values.
 
-### Command Line Arguments
+| CLI argument               | Environment variable     | Required | Default                   | Description                                |
+| -------------------------- | ------------------------ | -------- | ------------------------- | ------------------------------------------ |
+| `--input-directory`        | `INPUT_DIRECTORY`        | Yes      | —                         | Completed TV-show downloads to watch/scan. |
+| `--sorted-directory`       | `SORTED_DIRECTORY`       | Yes      | —                         | Organized TV-show library root.            |
+| `--movie-input-directory`  | `MOVIE_INPUT_DIRECTORY`  | No\*     | —                         | Completed movie downloads to watch/scan.   |
+| `--movie-sorted-directory` | `MOVIE_SORTED_DIRECTORY` | No\*     | —                         | Flat organized movie library root.         |
+| `--tmdb-token`             | `TMDB_TOKEN`             | Yes      | —                         | TMDB API Read Access Token.                |
+| `--replace-if-exists`      | `REPLACE_IF_EXISTS`      | No       | `false`                   | Replace an existing canonical hard link.   |
+| `--mode`                   | —                        | No       | `watch`                   | `watch` or `execute`.                      |
+| `--log-level`              | `LOG_LEVEL`              | No       | `info`                    | `error`, `warn`, `info`, or `debug`.       |
+| `--cache-file-path`        | `CACHE_FILE_PATH`        | No       | `.cache/tmdb-cache.jsonl` | Persistent TMDB JSONL cache.               |
 
-```bash
-# Watch mode (continuous monitoring)
-node main.js \
-  --input-directory /path/to/downloads \
-  --sorted-directory /path/to/organized/shows \
-  --tmdb-token your_tmdb_api_token \
-  --log-level debug \
-  --cache-file-path /app-cache/tmdb.json \
-  --replace-if-exists \
-  --mode watch
+`*` Movie directories are optional as a feature, but they are an all-or-nothing pair. Chiprr fails configuration validation if only one is supplied.
 
-# Execute mode (one-time scan)
-node main.js \
-  --input-directory /path/to/downloads \
-  --sorted-directory /path/to/organized/shows \
-  --tmdb-token your_tmdb_api_token \
-  --replace-if-exists \
-  --mode execute
-```
-
-### Environment Variables
+The existing show-only configuration remains valid:
 
 ```bash
-export INPUT_DIRECTORY=/path/to/downloads
-export SORTED_DIRECTORY=/path/to/organized/shows
-export TMDB_TOKEN=your_tmdb_api_token
-export LOG_LEVEL=info
-export CACHE_FILE_PATH=/path/to/cache.json
-export REPLACE_IF_EXISTS=true
+export INPUT_DIRECTORY=/data/downloads/completed/Shows
+export SORTED_DIRECTORY=/data/library/Shows
+export TMDB_TOKEN=your_tmdb_read_access_token
+
+bun run src/main.ts
 ```
 
-### Options
-
-| Option                 | Short | Environment Variable | Description                                                        | Required                                |
-| ---------------------- | ----- | ------------------- | ------------------------------------------------------------------ | --------------------------------------- |
-| `--input-directory`    | `-i`  | `INPUT_DIRECTORY`   | Directory to watch for new video files                             | Yes                                     |
-| `--sorted-directory`   | `-s`  | `SORTED_DIRECTORY`  | Directory where organized files will be linked                     | Yes                                     |
-| `--tmdb-token`         | `-t`  | `TMDB_TOKEN`        | TMDB API token for show name matching                              | Yes                                     |
-| `--replace-if-exists`  | `-f`  | `REPLACE_IF_EXISTS` | Replace destination file if it already exists                       | No (default: false)                     |
-| `--mode`               | `-m`  | -                   | Execution mode: `watch` (continuous) or `execute` (one-time scan) | No (default: watch)                     |
-| `--log-level`          | `-l`  | `LOG_LEVEL`         | Logging level (error, warn, info, debug)                           | No (default: info)                      |
-| `--cache-file-path`    | `-c`  | `CACHE_FILE_PATH`   | Path to the cache for TMDB API requests                            | No (default: ./.cache/tmdb-cache.jsonl) |
-
-## Getting a TMDB Token
-
-1. Visit [The Movie Database](https://www.themoviedb.org/)
-2. Create an account or log in
-3. Go to Settings → API
-4. Request an API key (choose "Developer" for personal use)
-5. Copy your API Read Access Token (Bearer token)
-
-Note: By default, a cache file will be created and it will be reused even if you restart the app. If you are using Docker, you may want to create a volume for this file.
-
-## Usage
-
-chiprr supports two execution modes:
-
-### Watch Mode (Default)
-
-Continuously monitors the input directory for new files:
+Enable movies by adding both variables:
 
 ```bash
-node main.js --mode watch
-# or simply
-node main.js
+export MOVIE_INPUT_DIRECTORY=/data/downloads/completed/Movies
+export MOVIE_SORTED_DIRECTORY=/data/library/Movies
 ```
 
-In watch mode, chiprr will:
+## Docker
 
-1. Watch the input directory for new video files
-2. Parse the filename to extract show name, season, and episode
-3. Query TMDB to get the official show name
-4. Create a hard link in the sorted directory with a clean, consistent naming format
-5. Continue running and monitoring for new files
-
-### Execute Mode
-
-Performs a one-time scan and organization of all existing files:
+Build the image:
 
 ```bash
-node main.js --mode execute
+docker build -t chiprr .
 ```
 
-In execute mode, chiprr will:
-
-1. Recursively scan the entire input directory for video files
-2. Process each video file found using the same logic as watch mode
-3. Report the number of successful and failed operations
-4. Exit once all files have been processed
-
-This mode is useful for:
-
-- Initial organization of an existing library
-- Periodic cleanup runs (e.g., via cron job)
-- Processing files that were added while chiprr was not running
-
-### Example
-
-Input file:
-
-```
-/downloads/Breaking.Bad.S01E03.720p.BluRay.x264-DEMAND.mkv
-```
-
-Output structure:
-
-```
-/sorted/Breaking Bad/Season 1/Breaking Bad S01E03.mkv
-```
-
-## Supported File Formats
-
-### Video Extensions
-
-- mp4, avi, mov, wmv, webm, flv, m4v, mkv, vob, ts, 3gp, asf, divx
-
-### Episode Naming Patterns
-
-- `S01E01` - Standard format
-- `1x01` - Alternative format
-- `Cap.101` - Spanish/Portuguese format (Capitulo)
-- `E01`, `Ep01` - Episode only format
-
-## Ignoring Files with .chiprrignore
-
-chiprr supports `.chiprrignore` files to exclude unwanted files and directories from processing. This feature uses gitignore syntax and works hierarchically.
-
-### How It Works
-
-Place a `.chiprrignore` file in any directory within your input directory. The ignore rules will apply to that directory and all its subdirectories.
-
-### Empty .chiprrignore File
-
-An **empty** `.chiprrignore` file will ignore **all files** in that directory and its subdirectories:
+Run with one common host mount so hard links remain possible:
 
 ```bash
-# Create an empty .chiprrignore to ignore everything in this directory
-touch /downloads/unwanted-show/.chiprrignore
+docker run --rm \
+  -e INPUT_DIRECTORY=/data/downloads/completed/Shows \
+  -e SORTED_DIRECTORY=/data/library/Shows \
+  -e MOVIE_INPUT_DIRECTORY=/data/downloads/completed/Movies \
+  -e MOVIE_SORTED_DIRECTORY=/data/library/Movies \
+  -e TMDB_TOKEN="$TMDB_TOKEN" \
+  -e CACHE_FILE_PATH=/cache/tmdb-cache.jsonl \
+  -v /srv/media-data:/data \
+  -v /srv/chiprr-cache:/cache \
+  chiprr
 ```
 
-### Pattern-Based Ignoring
+An equivalent Compose example is available in [`docker-compose.example.yml`](docker-compose.example.yml).
 
-A **non-empty** `.chiprrignore` file uses gitignore syntax to selectively ignore files:
+### qBittorrent setup
+
+The recommended qBittorrent configuration is:
+
+```text
+/srv/media-data/
+├── downloads/
+│   ├── incomplete/          # Never watched by Chiprr
+│   └── completed/
+│       ├── Shows/           # INPUT_DIRECTORY
+│       └── Movies/          # MOVIE_INPUT_DIRECTORY
+└── library/
+    ├── Shows/               # SORTED_DIRECTORY
+    └── Movies/              # MOVIE_SORTED_DIRECTORY
+```
+
+Configure qBittorrent categories such as `Shows` and `Movies` to place completed torrents in their respective completed directories. Chiprr assumes qBittorrent moves a download out of the incomplete directory only after completion. Chiprr does not create categories, submit torrents, or query download progress.
+
+## Modes
+
+### Watch mode (default)
+
+```bash
+bun run src/main.ts --mode watch
+```
+
+- Starts one watcher for shows and, when configured, one for movies.
+- Uses `ignoreInitial: true`: files already present at startup are not processed.
+- Handles newly created completed files.
+- Isolates per-file and per-pipeline errors so one bad media item does not stop the other pipeline.
+
+There is intentionally no implicit startup rescan.
+
+### Execute mode
+
+```bash
+bun run src/main.ts --mode execute
+```
+
+- Recursively scans every configured completed directory.
+- Applies `.chiprrignore` rules.
+- Processes supported video files with the same parser, matcher, and hard-link logic as watch mode.
+- Logs per-kind success/failure totals and exits.
+
+Use execute mode manually for an initial import or to recover files added while Chiprr was stopped.
+
+## Movie identification
+
+Chiprr builds candidates from the video filename first and then from parent directories, closest first. This allows a nested release such as:
+
+```text
+/completed/Movies/Arrival (2016)/ARRIVAL_FINAL.mkv
+```
+
+to fall back from `ARRIVAL FINAL` to `Arrival (2016)`.
+
+The parser:
+
+- extracts an optional release year;
+- removes common resolution, source, edition, video-codec, and audio-codec markers;
+- normalizes dots and underscores;
+- preserves Unicode/diacritics for matching;
+- avoids treating numeric titles such as `1917` or `2001: A Space Odyssey` as release years.
+
+The matcher searches TMDB's movie endpoint and translation endpoint. It compares the candidate against the search title, original title, and translated titles case-insensitively and without diacritics.
+
+Selection priority:
+
+1. Exact translated/original/title match with the extracted year.
+2. A single exact title match when no year is available.
+3. A single exact title whose TMDB year is unknown.
+4. The first TMDB result as a logged warning only when no exact or ambiguous match exists.
+
+Ambiguous exact-title matches are rejected rather than linked arbitrarily. Logs include the attempted filename/directory candidates.
+
+The output title is TMDB's English title. If no English translation exists, Chiprr falls back deterministically to `original_title` and then the selected search-result title.
+
+## Canonical filename sanitization
+
+Chiprr's output sanitization is the source-of-truth contract for catalogs that derive paths independently:
+
+1. Remove control characters.
+2. Convert `/`, `\`, and `:` to a spaced dash (`-`).
+3. Convert `<`, `>`, `"`, `|`, `?`, and `*` to spaces.
+4. Collapse repeated whitespace.
+5. Trim leading/trailing whitespace and trailing dots.
+6. Add `_` to Windows-reserved device names (`CON`, `PRN`, `AUX`, `NUL`, `COM1`–`COM9`, and `LPT1`–`LPT9`).
+7. Preserve Unicode characters and diacritics.
+
+The same title sanitization is applied to canonical show names and movie titles.
+
+## Existing destinations
+
+By default, an existing destination produces an error and remains untouched. Chiprr never silently overwrites it.
+
+Set `REPLACE_IF_EXISTS=true` or pass `--replace-if-exists` to unlink the old destination and create a hard link to the newly processed source. The original completed download is never deleted.
+
+## Supported files
+
+Video extensions:
+
+- `mp4`, `avi`, `mov`, `wmv`, `webm`, `flv`, `m4v`
+- `mkv`, `vob`, `ts`, `3gp`, `asf`, `divx`
+
+TV episode patterns currently include:
+
+- `S01E01`
+- `1x01`
+- `Cap.101` / `Capitulo 101`
+- combinations where season and episode markers occur separately
+
+## `.chiprrignore`
+
+Place a `.chiprrignore` file anywhere under a completed input directory. Rules apply hierarchically using gitignore syntax.
+
+An empty or whitespace-only `.chiprrignore` ignores the entire directory tree below it:
+
+```bash
+touch /data/downloads/completed/Movies/unwanted-release/.chiprrignore
+```
+
+A non-empty file can select patterns:
 
 ```gitignore
-# Ignore sample files
+# Ignore samples and extras
 *sample*
-*SAMPLE*
-
-# Ignore subtitle files
-*.srt
-*.sub
-*.ass
-
-# Ignore NFO and metadata files
-*.nfo
-*.txt
-
-# But keep important files
-!important.txt
-
-# Ignore specific directories
 extras/
-Extras/
-behind.the.scenes/
+
+# Ignore unwanted video variants
+*trailer*
+
+# Negation is supported
+!important.mkv
 ```
 
-### Example Directory Structure
+Common syntax:
 
-```
-/downloads/
-├── .chiprrignore              # Applies to all subdirectories
-├── Breaking Bad/
-│   ├── Season 1/
-│   │   ├── episode1.mkv       # ✓ Processed
-│   │   ├── episode1.srt       # ✗ Ignored (if *.srt in .chiprrignore)
-│   │   └── sample.mkv         # ✗ Ignored (if *sample* in .chiprrignore)
-│   └── extras/                # ✗ Ignored (if extras/ in .chiprrignore)
-│       └── interview.mkv
-└── unwanted-show/
-    ├── .chiprrignore          # Empty file - ignores everything
-    └── episode.mkv            # ✗ Ignored (empty .chiprrignore in parent)
-```
+- `*.log` — extension pattern.
+- `**/*.tmp` — recursive pattern.
+- `folder/` — entire directory.
+- `*sample*` — substring/wildcard.
+- `!important.mkv` — negation.
+- `# comment` — comment.
 
-### Supported Patterns
+Rules in parent and child `.chiprrignore` files are combined.
 
-chiprr uses the [`ignore`](https://github.com/kaelzhang/node-ignore) library, which fully implements gitignore specification:
+## TMDB cache
 
-- `*.log` - Ignore all .log files
-- `**/*.tmp` - Ignore .tmp files in any subdirectory
-- `!important.txt` - Negation: don't ignore this file
-- `folder/` - Ignore entire directory
-- `*sample*` - Ignore files containing "sample"
-- `# comment` - Comments are ignored
+The JSONL cache is persistent and debounced. Search keys include the media kind, normalized query, and movie year when supplied, so a movie and TV show with the same title cannot collide.
 
-### Hierarchical Rules
+Legacy show cache entries written before movie support remain readable. New entries always use the namespaced format.
 
-Rules from parent directories apply to child directories. You can have multiple `.chiprrignore` files at different levels:
+## Initial limitations
 
-```
-/downloads/
-├── .chiprrignore              # Global rules (e.g., *.srt)
-└── Show Name/
-    ├── Season 1/
-    │   └── .chiprrignore      # Additional rules for this season
-    └── Season 2/
-```
-
-## How It Works
-
-1. **File Watching**: Uses chokidar to monitor the input directory for new files
-2. **Filename Parsing**: Extracts show name, season, and episode from various naming conventions
-3. **Show Matching**: Queries TMDB API to find the correct show name and handles variations
-4. **Smart Matching**: Falls back to fuzzy matching and diacritics removal if exact match isn't found
-5. **File Organization**: Creates hard links in a clean directory structure without duplicating data
-6. **Ignore Filtering**: Checks `.chiprrignore` files to skip unwanted files and directories
+- One video file represents one movie or one TV episode.
+- Sidecar subtitles, NFO metadata, artwork, and other auxiliary files are not organized.
+- Multi-part movies and disc/BDMV folders are unsupported.
+- Multiple movies in one file are unsupported.
+- Multi-episode TV files are unsupported.
+- Anime absolute numbering is unsupported.
+- Specials and season zero are unsupported.
+- Chiprr does not choose among multiple qualities or upgrade existing media automatically.
+- Chiprr does not communicate with Nestrr, Jellyfin, Plex, qBittorrent, or another catalog/download service.
 
 ## Development
 
 ```bash
-# Run tests
-npm test
-
-# Run in development mode
-npm run dev
-
-# Build
-npm run build
+bun install --frozen-lockfile
+bunx tsc --noEmit
+bun test
 ```
 
-## Requirements
-
-- Node.js 18+
-- File system that supports hard links
-- TMDB API token
-- Write permissions for both input and sorted directories
+The test suite includes parser/matcher unit tests, TMDB HTTP/cache tests, configuration validation, watcher/execute isolation, ignore rules, real filesystem hard-link tests, and an end-to-end movie organization test.
 
 ## License
 
@@ -351,4 +345,4 @@ MIT
 
 ## Contributing
 
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome. For major changes, open an issue first to discuss the desired behavior and filesystem contract.

@@ -1,35 +1,42 @@
 import { Logger } from "../../infrastructure/logging/Logger";
 import { HardLinkCreator } from "../../infrastructure/filesystem/HardLinkCreator";
-import { VideoFileParser } from "./VideoFileParser";
-import { ShowMatcher } from "./ShowMatcher";
+import type { MatchedMedia } from "../models/MatchedMedia";
+
+export interface MediaParser<TParsed> {
+  parse(filePath: string): TParsed;
+}
+
+export interface MediaMatcher<TParsed> {
+  match(parsed: TParsed): Promise<MatchedMedia>;
+}
 
 /**
  * This is the main functionality.
  * It takes a file path and creates the hard link to the destination directory.
  */
-export class FileOrganizer {
+export class FileOrganizer<TParsed = unknown> {
   private isVideoFile: (path: string) => boolean;
-  private videoFileParser: VideoFileParser;
-  private showMatcher: ShowMatcher;
+  private mediaParser: MediaParser<TParsed>;
+  private mediaMatcher: MediaMatcher<TParsed>;
   private hardLinkCreator: HardLinkCreator;
   private logger: Logger;
 
   constructor({
     isVideoFile,
-    videoFileParser,
-    showMatcher,
+    mediaParser,
+    mediaMatcher,
     hardLinkCreator,
     logger,
   }: {
     isVideoFile: (path: string) => boolean;
-    videoFileParser: VideoFileParser;
-    showMatcher: ShowMatcher;
+    mediaParser: MediaParser<TParsed>;
+    mediaMatcher: MediaMatcher<TParsed>;
     hardLinkCreator: HardLinkCreator;
     logger: Logger;
   }) {
     this.isVideoFile = isVideoFile;
-    this.videoFileParser = videoFileParser;
-    this.showMatcher = showMatcher;
+    this.mediaParser = mediaParser;
+    this.mediaMatcher = mediaMatcher;
     this.hardLinkCreator = hardLinkCreator;
     this.logger = logger;
   }
@@ -42,11 +49,9 @@ export class FileOrganizer {
         return;
       }
 
-      // Parse the filename to extract episode info from all path elements
-      const parsedPathElements = this.videoFileParser.parse(filePath);
+      const parsedMedia = this.mediaParser.parse(filePath);
 
-      // Match the show name with TMDB using path elements
-      const matchedInfo = await this.showMatcher.match(parsedPathElements);
+      const matchedInfo = await this.mediaMatcher.match(parsedMedia);
 
       // Create hard link in organized structure
       await this.hardLinkCreator.createLink(filePath, matchedInfo);
