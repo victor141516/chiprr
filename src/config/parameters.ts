@@ -8,6 +8,7 @@ export interface AppConfig {
   movieInputDirectory?: string;
   movieSortedDirectory?: string;
   tmdbToken: string;
+  tmdbBaseUrl: string;
   logLevel: "error" | "warn" | "info" | "debug";
   cacheFilePath: string;
   replaceIfExists: boolean;
@@ -36,29 +37,44 @@ const parsedConfig = configure({
     cmdDescription: "TMDB API token",
     secret: true,
   }),
+  tmdbBaseUrl: customConfigElement({
+    type: z.string().url().optional(),
+    cmdDescription: "TMDB API base URL",
+  }),
   logLevel: customConfigElement({
-    type: z.enum(["error", "warn", "info", "debug"]).default("info"),
+    type: z.enum(["error", "warn", "info", "debug"]).optional(),
     cmdDescription: "Log level",
   }),
   cacheFilePath: customConfigElement({
-    type: z.string().default(".cache/tmdb-cache.jsonl"),
+    type: z.string().optional(),
     cmdDescription: "Path to TMDB cache file",
   }),
   replaceIfExists: customConfigElement({
-    type: z.boolean().default(false),
+    type: z.boolean().optional(),
     envName: "REPLACE_IF_EXISTS",
     cmdName: "replace-if-exists",
     cmdNameShort: "f",
     cmdDescription: "Replace destination file if it already exists",
   }),
   mode: customConfigElement({
-    type: z.enum(["watch", "execute"]).default("watch"),
+    type: z.enum(["watch", "execute"]).optional(),
     cmdDescription:
       "Execution mode: watch for continuous monitoring or execute for one-time scan",
   }),
 });
 
-const config = validateMovieDirectoryConfig(parsedConfig);
+// konfuz 2.0 currently reports environment overrides for Zod defaulted
+// fields but returns the schema default. Apply defaults after source parsing
+// so environment and CLI values retain their documented precedence.
+const config: AppConfig = validateMovieDirectoryConfig({
+  ...parsedConfig,
+  tmdbBaseUrl:
+    parsedConfig.tmdbBaseUrl ?? "https://api.themoviedb.org/3",
+  logLevel: parsedConfig.logLevel ?? "info",
+  cacheFilePath: parsedConfig.cacheFilePath ?? ".cache/tmdb-cache.jsonl",
+  replaceIfExists: parsedConfig.replaceIfExists ?? false,
+  mode: parsedConfig.mode ?? "watch",
+});
 
 printConfiguredSources(config);
 

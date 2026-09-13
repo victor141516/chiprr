@@ -10,8 +10,10 @@ import { createMediaPipelines } from "./application/createMediaPipelines";
 
 async function main(): Promise<void> {
   const mainLogger = new Logger({ logLevel: config.logLevel, name: "Main" });
+  mainLogger.info(`Using TMDB API base URL: ${config.tmdbBaseUrl}`);
   const tmdbClient = new TMDBClient({
     apiToken: config.tmdbToken,
+    baseUrl: config.tmdbBaseUrl,
     cache: new TMDBCache({
       cacheFilePath: config.cacheFilePath,
       logger: new Logger({ logLevel: config.logLevel, name: "TMDBCache" }),

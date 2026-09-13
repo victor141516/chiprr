@@ -1,5 +1,5 @@
-import * as path from "path";
 import { Logger } from "../../infrastructure/logging/Logger";
+import { collectPathEvidence } from "./MediaPathEvidence";
 
 export interface ParsedPathElement {
   episode: number | null;
@@ -13,19 +13,28 @@ export interface ParsedPathElement {
  */
 export class VideoFileParser {
   private logger: Logger;
+  private inputDirectory?: string;
 
-  constructor({ logger }: { logger: Logger }) {
+  constructor({
+    logger,
+    inputDirectory,
+  }: {
+    logger: Logger;
+    inputDirectory?: string;
+  }) {
     this.logger = logger;
+    this.inputDirectory = inputDirectory;
   }
 
   parse(filePath: string): ParsedPathElement[] {
-    const parsedPath = this.parsePath(filePath);
+    const parsedPath = collectPathEvidence(filePath, this.inputDirectory).reverse();
     const result: ParsedPathElement[] = [];
 
     // Process each path element independently
     for (let i = 0; i < parsedPath.length; i++) {
-      const part = parsedPath[i]!;
-      const isFile = i === parsedPath.length - 1;
+      const pathElement = parsedPath[i]!;
+      const part = pathElement.name;
+      const isFile = pathElement.source === "file";
 
       // Clean the name (remove extension for files)
       let cleanName = part;
@@ -63,25 +72,6 @@ export class VideoFileParser {
     return result;
   }
 
-  private parsePath(inputPath: string): string[] {
-    const parts: string[] = [];
-    let currentPath = inputPath;
-
-    currentPath = path.normalize(currentPath);
-
-    do {
-      const parsed = path.parse(currentPath);
-
-      if (parsed.base && parsed.base !== ".") {
-        parts.unshift(parsed.base);
-      }
-
-      currentPath = parsed.dir;
-    } while (currentPath && currentPath !== path.parse(currentPath).root);
-
-    return parts;
-  }
-
   private cleanFileName(
     fileName: string,
     episodeMatchedTexts: string[],
@@ -103,10 +93,11 @@ export class VideoFileParser {
       }
     }
 
-    // Remove everything in brackets
+    // Remove release metadata in non-parenthetical brackets. Parenthetical
+    // groups are preserved so the shared TMDB pipeline can try the complete
+    // title first and later reuse removed values as disambiguation evidence.
     showName = showName
       .replace(/\[[^\]]*\]/g, "")
-      .replace(/\([^\]]*\)/g, "")
       .replace(/\{[^\]]*\}/g, "")
       .replace(/\<[^\]]*\>/g, "");
     this.logger.debug(`Cleaning file name. Step 2. showName: "${showName}"`);

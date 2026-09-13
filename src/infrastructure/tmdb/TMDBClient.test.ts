@@ -123,4 +123,140 @@ describe("TMDBClient movie support", () => {
       /TMDB request failed \(503/,
     );
   });
+
+  it("collects exact movie disambiguation evidence from TMDB details", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      jsonResponse({
+        title: "The Odyssey",
+        original_title: "The Odyssey",
+        release_date: "2026-07-03",
+        original_language: "en",
+        production_companies: [
+          { name: "The Asylum", origin_country: "US" },
+        ],
+        production_countries: [
+          { iso_3166_1: "US", name: "United States of America" },
+        ],
+        spoken_languages: [
+          { iso_639_1: "en", english_name: "English", name: "English" },
+        ],
+        credits: {
+          cast: [{ name: "Daniel O'Reilly" }],
+          crew: [
+            {
+              name: "Christopher Ray",
+              job: "Director",
+              department: "Directing",
+            },
+            {
+              name: "Someone Else",
+              job: "Producer",
+              department: "Production",
+            },
+          ],
+        },
+      }),
+    );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    await expect(client().getMovieEvidence(1698863)).resolves.toEqual(
+      expect.arrayContaining([
+        "The Asylum",
+        "US",
+        "2026",
+        "Christopher Ray",
+        "Daniel O'Reilly",
+      ]),
+    );
+    expect(String(fetchMock.mock.calls[0]![0])).toContain(
+      "/3/movie/1698863?",
+    );
+  });
+
+  it("keeps every direct show title match so evidence can disambiguate them", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      jsonResponse({
+        total_results: 2,
+        results: [
+          { id: 1, name: "The Office", original_name: "The Office" },
+          { id: 2, name: "The Office", original_name: "The Office" },
+        ],
+      }),
+    );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    await expect(client().searchShow("The Office")).resolves.toHaveLength(2);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("collects show creators, networks, countries, and companies as evidence", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValueOnce(
+      jsonResponse({
+        name: "The Office",
+        original_name: "The Office",
+        first_air_date: "2005-03-24",
+        original_language: "en",
+        origin_country: ["US"],
+        created_by: [{ name: "Greg Daniels" }],
+        networks: [{ name: "NBC", origin_country: "US" }],
+        production_companies: [
+          { name: "Universal Television", origin_country: "US" },
+        ],
+        production_countries: [
+          { iso_3166_1: "US", name: "United States of America" },
+        ],
+        spoken_languages: [
+          { iso_639_1: "en", english_name: "English", name: "English" },
+        ],
+      }),
+    ) as unknown as typeof fetch;
+
+    await expect(client().getShowEvidence(2316)).resolves.toEqual(
+      expect.arrayContaining([
+        "2005",
+        "US",
+        "Greg Daniels",
+        "NBC",
+        "Universal Television",
+      ]),
+    );
+  });
+
+  it("routes search and translation requests through a configured base URL", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          total_results: 1,
+          results: [
+            {
+              id: 42,
+              title: "Temporal Horizon",
+              original_title: "Temporal Horizon",
+              release_date: "2026-02-20",
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ translations: [] }));
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const configuredClient = new TMDBClient({
+      apiToken: "token",
+      baseUrl: "http://mock-tmdb:9090/3/",
+      cache: new TMDBCache({
+        logger: new Logger({ logLevel: "error", name: "TMDBCacheTest" }),
+      }),
+      logger: new Logger({ logLevel: "error", name: "TMDBClientTest" }),
+    });
+
+    await configuredClient.searchMovie("Temporal Horizon", 2026);
+
+    expect(String(fetchMock.mock.calls[0]![0])).toMatch(
+      /^http:\/\/mock-tmdb:9090\/3\/search\/movie\?/,
+    );
+    expect(String(fetchMock.mock.calls[1]![0])).toBe(
+      "http://mock-tmdb:9090/3/movie/42/translations",
+    );
+  });
 });

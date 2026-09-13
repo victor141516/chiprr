@@ -7,6 +7,7 @@ const baseConfig: AppConfig = {
   inputDirectory: "/completed/shows",
   sortedDirectory: "/library/shows",
   tmdbToken: "token",
+  tmdbBaseUrl: "https://api.themoviedb.org/3",
   logLevel: "error",
   cacheFilePath: "/cache/tmdb.jsonl",
   replaceIfExists: false,

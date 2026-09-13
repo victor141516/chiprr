@@ -25,16 +25,20 @@ export class FileWatcher {
   private directoryPath: string;
   private logger: Logger;
   private ignoreFilter: IgnoreFilter;
+  private pollIntervalMs: number;
 
   constructor({
     directoryPath,
     logger,
+    pollIntervalMs = 5_000,
   }: {
     directoryPath: string;
     logger: Logger;
+    pollIntervalMs?: number;
   }) {
     this.directoryPath = directoryPath;
     this.logger = logger;
+    this.pollIntervalMs = pollIntervalMs;
     this.emitter = mitt<FileWatcherEvents>();
     this.ignoreFilter = new IgnoreFilter({
       logger,
@@ -56,6 +60,12 @@ export class FileWatcher {
       persistent: true,
       ignoreInitial: true,
       followSymlinks: false,
+      // Docker Desktop/WSL does not reliably forward rename events between
+      // containers sharing a Windows bind mount. Polling catches qBittorrent's
+      // final directory move into the completed directory.
+      usePolling: true,
+      interval: this.pollIntervalMs,
+      binaryInterval: this.pollIntervalMs,
     });
 
     this.watcher.on("add", async (filePath: string) => {

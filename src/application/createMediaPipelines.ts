@@ -15,6 +15,7 @@ export function createMediaPipelines(
   tmdbClient: TMDBClient,
 ): MediaPipeline[] {
   const videoFileParser = new VideoFileParser({
+    inputDirectory: appConfig.inputDirectory,
     logger: new Logger({
       logLevel: appConfig.logLevel,
       name: "VideoFileParser",
@@ -51,7 +52,9 @@ export function createMediaPipelines(
   ];
 
   if (appConfig.movieInputDirectory && appConfig.movieSortedDirectory) {
-    const movieParser = new MovieFileParser();
+    const movieParser = new MovieFileParser({
+      inputDirectory: appConfig.movieInputDirectory,
+    });
     const movieMatcher = new MovieMatcher({
       tmdbClient,
       logger: new Logger({

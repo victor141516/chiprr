@@ -75,4 +75,85 @@ describe("movie organization pipeline", () => {
     expect(destinationStat.ino).toBe(sourceStat.ino);
     await expect(fs.readFile(destination, "utf8")).resolves.toBe("movie");
   });
+
+  it("organizes the exact Spider-Man release from issue 18 without trying infrastructure ancestors", async () => {
+    const movieInputDirectory = path.join(
+      temporaryDirectory,
+      "data",
+      "downloads",
+      "completed",
+      "Movies",
+    );
+    const release =
+      "Spider Man No Way Home (2021) [BluRay 720p X264 MKV][AC3 5.1 Castellano][www.atomixHQ.LINK]";
+    const releaseDirectory = path.join(movieInputDirectory, release);
+    const libraryDirectory = path.join(temporaryDirectory, "library");
+    await fs.mkdir(releaseDirectory, { recursive: true });
+    const source = path.join(releaseDirectory, `${release}.mkv`);
+    await fs.writeFile(source, "spider-man");
+
+    const searches: Array<{ query: string; year?: number }> = [];
+    const logger = new Logger({ logLevel: "error", name: "Issue18Test" });
+    const tmdbClient: MovieSearchClient = {
+      async searchMovie(query, year) {
+        searches.push({ query, year });
+        if (query === "data") {
+          return [
+            {
+              id: 1,
+              title: "Data",
+              originalTitle: "Data",
+              names: ["data"],
+              year: 2010,
+            },
+            {
+              id: 2,
+              title: "Data",
+              originalTitle: "Data",
+              names: ["data"],
+              year: 2020,
+            },
+          ];
+        }
+        return [
+          {
+            id: 634649,
+            title: "Spider-Man: No Way Home",
+            originalTitle: "Spider-Man: No Way Home",
+            names: ["spider-man: no way home"],
+            year: 2021,
+          },
+        ];
+      },
+    };
+    const organizer = new FileOrganizer({
+      isVideoFile,
+      mediaParser: new MovieFileParser({
+        inputDirectory: movieInputDirectory,
+      }),
+      mediaMatcher: new MovieMatcher({ tmdbClient, logger }),
+      hardLinkCreator: new HardLinkCreator({
+        sortedDirectory: libraryDirectory,
+        replaceIfExists: false,
+        logger,
+      }),
+      logger,
+    });
+
+    await organizer.organize(source);
+
+    const destination = path.join(
+      libraryDirectory,
+      "Spider-Man - No Way Home (2021).mkv",
+    );
+    const [sourceStat, destinationStat] = await Promise.all([
+      fs.stat(source),
+      fs.stat(destination),
+    ]);
+    expect(destinationStat.ino).toBe(sourceStat.ino);
+    expect(searches).toEqual([
+      { query: "Spider Man No Way Home 2021", year: undefined },
+      { query: "Spider Man No Way Home", year: undefined },
+    ]);
+  });
 });

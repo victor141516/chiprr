@@ -1,11 +1,13 @@
 import type { MovieInfo } from "../models/MovieInfo";
 import type { CachedMovie } from "../../infrastructure/tmdb/TMDBCache";
 import { Logger } from "../../infrastructure/logging/Logger";
-import { removeDiacritics } from "../../utils/stringUtils";
 import type { MovieCandidate } from "./MovieFileParser";
+import { groupCorroboratedTitles } from "./MediaPathEvidence";
+import { matchTitleVariants } from "./TitleMatchPipeline";
 
 export interface MovieSearchClient {
   searchMovie(query: string, year?: number): Promise<CachedMovie[]>;
+  getMovieEvidence?(movieId: number): Promise<string[]>;
 }
 
 export class MovieMatcher {
@@ -32,56 +34,77 @@ export class MovieMatcher {
     let fallback: { movie: CachedMovie; candidate: MovieCandidate } | undefined;
     let ambiguousCandidate: MovieCandidate | undefined;
 
-    for (const candidate of candidates) {
-      attemptedCandidates.push(
-        `${candidate.title}${candidate.year ? ` (${candidate.year})` : ""}`,
-      );
-      const searchResult = await this.tmdbClient.searchMovie(
-        candidate.title,
-        candidate.year ?? undefined,
-      );
+    const candidateGroups = groupCorroboratedTitles(
+      candidates,
+      ({ title }) => title,
+    );
 
-      if (!fallback && searchResult[0]) {
-        fallback = { movie: searchResult[0], candidate };
+    for (const group of candidateGroups) {
+      const candidate = group.items[0]!;
+      for (const item of group.items) {
+        const attempted = `${item.title}${item.year ? ` (${item.year})` : ""}`;
+        if (!attemptedCandidates.includes(attempted)) {
+          attemptedCandidates.push(attempted);
+        }
       }
 
-      const normalizedCandidate = this.normalize(candidate.title);
-      const exactTitleMatches = searchResult.filter((movie) =>
-        movie.names.some(
-          (movieName) => this.normalize(movieName) === normalizedCandidate,
+      // A four-digit token can be part of the title (for example, "Odisea
+      // 2001") rather than a release year. Try that complete title first and
+      // only treat the token as a year later if the base title is ambiguous.
+      const titlesWithYearToken = [
+        ...new Set(
+          group.items
+            .map(({ titleWithYearToken }) => titleWithYearToken)
+            .filter((title): title is string => Boolean(title)),
         ),
-      );
-
-      if (candidate.year !== null) {
-        const titleAndYearMatches = exactTitleMatches.filter(
-          (movie) => movie.year === candidate.year,
-        );
-        if (titleAndYearMatches.length === 1) {
-          return this.toMovieInfo(titleAndYearMatches[0]!);
+      ];
+      for (const titleWithYearToken of titlesWithYearToken) {
+        const result = await matchTitleVariants({
+          title: titleWithYearToken,
+          search: (query) => this.tmdbClient.searchMovie(query),
+          loadEvidence: this.tmdbClient.getMovieEvidence
+            ? (movie) => this.tmdbClient.getMovieEvidence!(movie.id)
+            : undefined,
+        });
+        if (!fallback && result.fallback) {
+          fallback = { movie: result.fallback, candidate };
         }
-        if (titleAndYearMatches.length > 1) {
-          ambiguousCandidate = candidate;
-          continue;
+        if (result.match) {
+          return this.toMovieInfo(result.match);
         }
-
-        const unknownYearMatches = exactTitleMatches.filter(
-          (movie) => movie.year === null,
-        );
-        if (exactTitleMatches.length === 1 && unknownYearMatches.length === 1) {
-          return this.toMovieInfo(unknownYearMatches[0]!);
-        }
-
-        if (exactTitleMatches.length > 0) {
+        if (result.ambiguous) {
           ambiguousCandidate = candidate;
         }
-        continue;
       }
 
-      if (exactTitleMatches.length === 1) {
-        return this.toMovieInfo(exactTitleMatches[0]!);
+      const yearHints = [
+        ...new Set(
+          group.items
+            .map(({ year }) => year)
+            .filter((year): year is number => year !== null),
+        ),
+      ];
+      const result = await matchTitleVariants({
+        title: group.items.map(({ title }) => title),
+        search: (query) => this.tmdbClient.searchMovie(query),
+        refineAmbiguous: (movies) =>
+          yearHints.length === 0
+            ? movies
+            : movies.filter(
+                (movie) =>
+                  movie.year !== null && yearHints.includes(movie.year),
+              ),
+        loadEvidence: this.tmdbClient.getMovieEvidence
+          ? (movie) => this.tmdbClient.getMovieEvidence!(movie.id)
+          : undefined,
+      });
+      if (!fallback && result.fallback) {
+        fallback = { movie: result.fallback, candidate };
       }
-
-      if (exactTitleMatches.length > 1) {
+      if (result.match) {
+        return this.toMovieInfo(result.match);
+      }
+      if (result.ambiguous) {
         ambiguousCandidate = candidate;
       }
     }
@@ -103,13 +126,6 @@ export class MovieMatcher {
     const message = `Could not find a TMDB movie match. Attempted candidates: ${attemptedCandidates.join(", ")}`;
     this.logger.error(message);
     throw new Error(message);
-  }
-
-  private normalize(value: string): string {
-    return removeDiacritics(value.trim().toLocaleLowerCase()).replace(
-      /\s+/g,
-      " ",
-    );
   }
 
   private toMovieInfo(movie: CachedMovie): MovieInfo {

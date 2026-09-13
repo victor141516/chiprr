@@ -1,8 +1,10 @@
 import * as path from "path";
+import { collectPathEvidence } from "./MediaPathEvidence";
 
 export interface MovieCandidate {
   title: string;
   year: number | null;
+  titleWithYearToken?: string;
   source: "file" | "directory";
   sourceName: string;
 }
@@ -28,25 +30,16 @@ const YEAR_PATTERN =
  * directories from closest to furthest.
  */
 export class MovieFileParser {
+  private inputDirectory?: string;
+
+  constructor({ inputDirectory }: { inputDirectory?: string } = {}) {
+    this.inputDirectory = inputDirectory
+      ? path.resolve(inputDirectory)
+      : undefined;
+  }
+
   parse(filePath: string): MovieCandidate[] {
-    const pathElements = this.parsePath(filePath);
-    const fileName = pathElements.at(-1);
-    if (!fileName) {
-      return [];
-    }
-
-    const orderedElements: Array<{
-      name: string;
-      source: "file" | "directory";
-    }> = [
-      { name: fileName, source: "file" },
-      ...pathElements
-        .slice(0, -1)
-        .reverse()
-        .map((name) => ({ name, source: "directory" as const })),
-    ];
-
-    const seen = new Set<string>();
+    const orderedElements = collectPathEvidence(filePath, this.inputDirectory);
     const candidates: MovieCandidate[] = [];
 
     for (const element of orderedElements) {
@@ -62,12 +55,6 @@ export class MovieFileParser {
         continue;
       }
 
-      const key = `${candidate.title.toLocaleLowerCase()}:${candidate.year ?? ""}`;
-      if (seen.has(key)) {
-        continue;
-      }
-
-      seen.add(key);
       candidates.push(candidate);
     }
 
@@ -122,23 +109,10 @@ export class MovieFileParser {
     return {
       title,
       year,
+      titleWithYearToken: year === null ? undefined : `${title} ${year}`,
       source,
       sourceName: pathElement,
     };
   }
 
-  private parsePath(inputPath: string): string[] {
-    const elements: string[] = [];
-    let currentPath = path.normalize(inputPath);
-
-    do {
-      const parsed = path.parse(currentPath);
-      if (parsed.base && parsed.base !== ".") {
-        elements.unshift(parsed.base);
-      }
-      currentPath = parsed.dir;
-    } while (currentPath && currentPath !== path.parse(currentPath).root);
-
-    return elements;
-  }
 }
