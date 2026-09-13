@@ -88,7 +88,7 @@ const testCases: Array<{
         type: "directory",
       },
       {
-        bestEffortShowName: "peaky blinders",
+        bestEffortShowName: "peaky blinders (proper)",
         episode: 5,
         season: 1,
         type: "directory",
@@ -220,7 +220,7 @@ const testCases: Array<{
         type: "directory",
       },
       {
-        bestEffortShowName: "the witcher",
+        bestEffortShowName: "the witcher (2019)",
         episode: null,
         season: null,
         type: "directory",
@@ -268,7 +268,7 @@ const testCases: Array<{
         type: "directory",
       },
       {
-        bestEffortShowName: "chernobyl",
+        bestEffortShowName: "chernobyl (2019)",
         episode: null,
         season: null,
         type: "directory",
@@ -316,7 +316,7 @@ const testCases: Array<{
         type: "directory",
       },
       {
-        bestEffortShowName: "the office",
+        bestEffortShowName: "the office (us)",
         episode: null,
         season: null,
         type: "directory",
@@ -526,7 +526,7 @@ const testCases: Array<{
         type: "directory",
       },
       {
-        bestEffortShowName: "the office",
+        bestEffortShowName: "the office (us)",
         episode: null,
         season: null,
         type: "directory",
@@ -686,7 +686,7 @@ const testCases: Array<{
     filePath: "The Office (US) - S02E10 - Christmas Party.avi",
     result: [
       {
-        bestEffortShowName: "the office",
+        bestEffortShowName: "the office (us)",
         episode: 10,
         season: 2,
         type: "file",
@@ -707,4 +707,30 @@ describe("VideoFileParser", () => {
       });
     });
   }
+
+  it("does not expose directories above the configured input root as evidence", () => {
+    const boundedParser = new VideoFileParser({
+      logger,
+      inputDirectory: "/data/downloads/completed/Shows",
+    });
+
+    expect(
+      boundedParser.parse(
+        "/data/downloads/completed/Shows/Breaking Bad/Breaking.Bad.S01E01.mkv",
+      ),
+    ).toStrictEqual([
+      {
+        bestEffortShowName: "breaking bad",
+        episode: null,
+        season: null,
+        type: "directory",
+      },
+      {
+        bestEffortShowName: "breaking bad",
+        episode: 1,
+        season: 1,
+        type: "file",
+      },
+    ]);
+  });
 });

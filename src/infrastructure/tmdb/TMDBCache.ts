@@ -9,13 +9,24 @@ export interface CachedShow {
   name: string;
 }
 
+export interface CachedMovie {
+  names: string[];
+  id: number;
+  title: string;
+  originalTitle: string;
+  year: number | null;
+}
+
+export type CachedMedia = CachedShow | CachedMovie;
+export type MediaKind = "show" | "movie";
+
 interface CacheEntry {
   searchTerm: string;
-  result: CachedShow[];
+  result: CachedMedia[];
 }
 
 export class TMDBCache {
-  private cache: Map<string, CachedShow[]> = new Map();
+  private cache: Map<string, CachedMedia[]> = new Map();
   private cacheFilePath?: string;
   private saveTimeout: NodeJS.Timeout | null = null;
   private readonly SAVE_DELAY_MS = 1000; // Debounce writes by 1 second
@@ -115,7 +126,9 @@ export class TMDBCache {
     try {
       // Ensure the cache directory exists
       const cacheDir = path.dirname(this.cacheFilePath!);
-      await fs.mkdir(cacheDir, { recursive: true });
+      if (cacheDir !== ".") {
+        await fs.mkdir(cacheDir, { recursive: true });
+      }
 
       // Build JSONL content - one JSON object per line
       const lines: string[] = [];
@@ -131,17 +144,50 @@ export class TMDBCache {
     }
   }
 
-  get(query: string): CachedShow[] | undefined {
-    return this.cache.get(query);
+  get<T extends CachedMedia>(query: string): T[] | undefined {
+    return this.cache.get(query) as T[] | undefined;
   }
 
-  set(query: string, shows: CachedShow[]): void {
-    this.cache.set(query, shows);
+  set<T extends CachedMedia>(query: string, media: T[]): void {
+    this.cache.set(query, media);
     this.scheduleSave();
   }
 
   has(query: string): boolean {
     return this.cache.has(query);
+  }
+
+  getSearch<T extends CachedMedia>(
+    kind: MediaKind,
+    query: string,
+    year?: number,
+  ): T[] | undefined {
+    const result = this.get<T>(this.searchKey(kind, query, year));
+    if (result !== undefined) {
+      return result;
+    }
+
+    // Cache files created before movie support used the raw show query as key.
+    // Read them for backward compatibility, but all new entries are namespaced.
+    if (kind === "show") {
+      return this.get<T>(query.toLowerCase());
+    }
+
+    return undefined;
+  }
+
+  setSearch<T extends CachedMedia>(
+    kind: MediaKind,
+    query: string,
+    result: T[],
+    year?: number,
+  ): void {
+    this.set(this.searchKey(kind, query, year), result);
+  }
+
+  private searchKey(kind: MediaKind, query: string, year?: number): string {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+    return `${kind}:${normalizedQuery}:${year ?? ""}`;
   }
 
   clear(): void {

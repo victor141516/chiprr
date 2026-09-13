@@ -1,0 +1,17 @@
+services:
+  chiprr:
+    build: .
+    restart: unless-stopped
+    environment:
+      INPUT_DIRECTORY: /data/downloads/completed/Shows
+      SORTED_DIRECTORY: /data/library/Shows
+      MOVIE_INPUT_DIRECTORY: /data/downloads/completed/Movies
+      MOVIE_SORTED_DIRECTORY: /data/library/Movies
+      TMDB_TOKEN: ${TMDB_TOKEN}
+      CACHE_FILE_PATH: /cache/tmdb-cache.jsonl
+      LOG_LEVEL: info
+      REPLACE_IF_EXISTS: "false"
+    volumes:
+      # One common mount is required so hard links do not cross mount points.
+      - /srv/media-data:/data
+      - /srv/chiprr-cache:/cache

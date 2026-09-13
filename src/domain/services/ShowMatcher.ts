@@ -1,22 +1,28 @@
 import { Logger } from "../../infrastructure/logging/Logger";
-import { TMDBClient } from "../../infrastructure/tmdb/TMDBClient";
-import { removeDiacritics } from "../../utils/stringUtils";
+import type { CachedShow } from "../../infrastructure/tmdb/TMDBCache";
 import type { EpisodeInfo } from "../models/EpisodeInfo";
 import type { ParsedPathElement } from "./VideoFileParser";
+import { groupCorroboratedTitles } from "./MediaPathEvidence";
+import { matchTitleVariants } from "./TitleMatchPipeline";
+
+export interface ShowSearchClient {
+  searchShow(query: string): Promise<CachedShow[]>;
+  getShowEvidence?(showId: number): Promise<string[]>;
+}
 
 /**
  * Takes information extracted exclusively from the file name (or directories in the file path)
  * and look into a database to match the extracted name to a an actual show.
  */
 export class ShowMatcher {
-  private tmdbClient: TMDBClient;
+  private tmdbClient: ShowSearchClient;
   private logger: Logger;
 
   constructor({
     tmdbClient,
     logger,
   }: {
-    tmdbClient: TMDBClient;
+    tmdbClient: ShowSearchClient;
     logger: Logger;
   }) {
     this.tmdbClient = tmdbClient;
@@ -57,122 +63,60 @@ export class ShowMatcher {
     const season = episodeSource.season;
     const episode = episodeSource.episode;
 
-    // Try to match the file's show name first
-    const { foundMatch, matchedName } = await this.tryMatch(
-      fileElement.bestEffortShowName,
-    );
-
-    if (foundMatch) {
-      return {
-        showName: matchedName,
-        season,
-        episode,
-      };
-    }
-
-    // If no exact match found with filename, try parent directories iteratively
-    // Directories are in order from root to file, so we reverse to go from closest to furthest
+    // Directories are in order from root to file, so reverse them to collect
+    // common title evidence from the closest parent first.
     const directories = parsedPathElements
       .filter((el) => el.type === "directory")
-      .reverse();
+      .reverse()
+      .filter(({ bestEffortShowName }) => bestEffortShowName.length > 3);
+    const titleGroups = groupCorroboratedTitles(
+      [fileElement, ...directories],
+      ({ bestEffortShowName }) => bestEffortShowName,
+    );
+    let fallback: CachedShow | undefined;
 
-    if (directories.length > 0) {
-      this.logger.debug(
-        `No exact match found for filename "${
-          fileElement.bestEffortShowName
-        }". Trying parent directories iteratively. (${JSON.stringify(
-          directories.map((d) => d.bestEffortShowName),
-        )})`,
+    for (const group of titleGroups) {
+      const titles = group.items.map(({ bestEffortShowName }) =>
+        bestEffortShowName,
       );
-
-      // Iterate from closest parent to furthest
-      for (const directory of directories) {
-        // Skip meaningless directory names
-        if (directory.bestEffortShowName.length <= 3) {
-          continue;
-        }
-
-        this.logger.debug(
-          `Trying parent directory: "${directory.bestEffortShowName}"`,
-        );
-        const { foundMatch, matchedName } = await this.tryMatch(
-          directory.bestEffortShowName,
-        );
-
-        if (foundMatch) {
-          this.logger.debug(
-            `Perfect match found with parent directory: "${directory.bestEffortShowName}" -> "${matchedName}"`,
-          );
-          return {
-            showName: matchedName,
-            season,
-            episode,
-          };
-        }
+      const title = titles[0]!;
+      this.logger.debug(
+        `Trying show title evidence "${title}" with ${group.support} supporting path element(s)`,
+      );
+      const result = await matchTitleVariants({
+        title: titles,
+        search: (query) => this.tmdbClient.searchShow(query),
+        loadEvidence: this.tmdbClient.getShowEvidence
+          ? (show) => this.tmdbClient.getShowEvidence!(show.id)
+          : undefined,
+      });
+      fallback ??= result.fallback;
+      if (result.match) {
+        return {
+          kind: "show",
+          showName: result.match.name,
+          season,
+          episode,
+        };
       }
-
-      this.logger.debug(
-        "No exact match found in parent directories. Falling back to first result.",
-      );
     }
 
-    // Fallback to first result with original show name
-    const searchResult = await this.tmdbClient.searchShow(
-      fileElement.bestEffortShowName,
-    );
-    if (searchResult.length === 0) {
-      this.logger.error(
-        `Could not find any match for name: ${fileElement.bestEffortShowName}`,
-      );
-      throw new Error(
-        `Could not find any match for name: ${fileElement.bestEffortShowName}`,
-      );
-    } else {
+    if (fallback) {
       this.logger.warn(
-        `Could not find exact match for: "${
-          fileElement.bestEffortShowName
-        }". Using first search result: "${searchResult[0]!.name}"`,
+        `Could not find an exact corroborated show title. Using first result: "${fallback.name}"`,
       );
       return {
-        showName: searchResult[0]!.name,
+        kind: "show",
+        showName: fallback.name,
         season,
         episode,
       };
     }
-  }
 
-  private async tryMatch(
-    name: string,
-  ): Promise<{ foundMatch: boolean; matchedName: string }> {
-    const searchResult = await this.tmdbClient.searchShow(name);
-
-    // Try exact match
-    for (const show of searchResult) {
-      if (show.names.includes(name.toLowerCase())) {
-        this.logger.debug(`Exact match found for: "${name}"`);
-        return { foundMatch: true, matchedName: show.name };
-      }
-    }
-
-    // Try without diacritics
-    this.logger.debug(
-      `Not found exact match for "${name}". Trying without diacritics.`,
-    );
-    const parsedNameWithoutDiacritics = removeDiacritics(name.toLowerCase());
-    for (const show of searchResult) {
-      const apiNamesWithoutDiacritics = show.names.map((n) =>
-        removeDiacritics(n),
-      );
-      if (apiNamesWithoutDiacritics.includes(parsedNameWithoutDiacritics)) {
-        this.logger.debug(
-          `Found a match after removing diacritics: "${parsedNameWithoutDiacritics}" in "${JSON.stringify(
-            apiNamesWithoutDiacritics,
-          )}"`,
-        );
-        return { foundMatch: true, matchedName: show.name };
-      }
-    }
-
-    return { foundMatch: false, matchedName: "" };
+    const attempted = titleGroups
+      .map(({ items }) => items[0]!.bestEffortShowName)
+      .join(", ");
+    this.logger.error(`Could not find any show match. Attempted: ${attempted}`);
+    throw new Error(`Could not find any show match. Attempted: ${attempted}`);
   }
 }
